@@ -158,6 +158,17 @@
 
     </footer>
 
+    <script>
+      let header = document.querySelector('.page-header')
+      let user = detect.parse(navigator.userAgent);
+
+      if (user.browser.family === 'Safari') {
+        header.classList.add('for-safari');
+      } else {
+        header.classList.remove('for-safari');
+      }
+    </script>
+
   </body>
 
 </html>

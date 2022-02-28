@@ -29,6 +29,11 @@ section {
 
 .page-header {
   margin: 0px;
+  background-color: rgba(0,0,0, 1);
+}
+
+.page-header .for-safari {
+  margin: 0px;
   background-color: rgba(0,0,0, 0.75);
   -webkit-backdrop-filter: blur(50px);
 }
