@@ -32,10 +32,16 @@ section {
   scroll-margin-top: 70px;
 }
 
-
+/*
 .page-header {
   background-color: #000000;
   margin: 0px;
+}
+*/
+.page-header {
+  margin: 0px;
+    background-color: rgba(0,0,0, 0.75);
+  -webkit-backdrop-filter: blur(50px);
 }
 
 .header-container {
