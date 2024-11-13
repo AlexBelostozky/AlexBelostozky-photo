@@ -31,7 +31,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@import '../assets/styles/main.scss';
+
 .header {
   position: fixed;
   top: 0;
@@ -45,7 +47,7 @@ export default {
 
 .header__container {
   display: grid;
-  grid-template-columns:  1fr 2fr;
+  grid-template-columns: 1fr 2fr;
   width: 1000px;
   margin-left: auto;
   margin-right: auto;
@@ -78,13 +80,12 @@ export default {
   border-radius: 2px;
 }
 
-.header__navigation-link,
-.header__navigation-link:visited {
-  color: #fff;
-}
+.header__navigation-link {
+  color: $white;
 
-.header__navigation-link:hover {
-  background-color: rgba(128, 128, 128, 0.7);
-  color: #fff;
+  &:hover {
+    background-color: rgba(128, 128, 128, 0.7);
+    color: $white;
+  }
 }
 </style>

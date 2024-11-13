@@ -5,9 +5,8 @@
     "baseUrl": "./",
     "moduleResolution": "node",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"],
+      "@styles/*": ["src/assets/styles/*"]
     },
     "lib": [
       "esnext",
