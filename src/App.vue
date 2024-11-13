@@ -23,6 +23,9 @@ export default {
 
 <style>
 #app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
   font-family: "SF Pro Rounded", ui-rounded, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,17 +35,18 @@ export default {
 
 body {
   font-style: normal;
-  margin: 0px;
-  padding-top: 0px;
+  margin: 0;
+  padding-top: 0;
 }
 
 main {
-  margin: 0px;
+  flex-grow: 1;
+  margin: 0;
   padding-top: 20px;
 }
 
-a:active, /* активная/посещенная ссылка */
-a:hover,  /* при наведении */
+a:active,
+a:hover,
 a {
   text-decoration: none;
   color: #ff9d6d;

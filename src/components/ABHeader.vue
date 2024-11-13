@@ -1,20 +1,20 @@
 <template>
-	<header class="page-header">
-      <div class="header-container">
-        <img src="img/logo.png" width="240px" height="" class="logo" alt="Логотип">
+	<header class="header">
+      <div class="header__container">
+        <img class="header__logo" src="img/logo.png" width="240px" height=""  alt="Логотип">
 
-        <nav id="top">
-          <ul class="navigation" type="none">
-            <li class="navigation-item">
-              <a class="navigation-link" href="#about">Обо мне</a>
+        <nav class="header__navigation" id="top">
+          <ul class="header__navigation-list" type="none">
+            <li class="header__navigation-item">
+              <a class="header__navigation-link" href="#about">Обо мне</a>
             </li>
 
-            <li class="navigation-item">
-              <a class="navigation-link" href="#works">Мои работы</a>
+            <li class="header__navigation-item">
+              <a class="header__navigation-link" href="#works">Мои работы</a>
             </li>
 
-            <li class="navigation-item">
-              <a class="navigation-link" href="#contacts">Контакты</a>
+            <li class="header__navigation-item">
+              <a class="header__navigation-link" href="#contacts">Контакты</a>
             </li>
           </ul>
         </nav>
@@ -32,26 +32,18 @@ export default {
 </script>
 
 <style>
-header {
+.header {
   position: fixed;
-  top: 0px;
-  z-index: 1;
+  top: 0;
   width: 100%;
   height: auto;
-}
-
-.page-header {
-  margin: 0px;
-  background-color: rgba(0,0,0, 1);
-}
-
-.safari-page-header {
-  margin: 0px;
-  background-color: rgba(0,0,0, 0.75);
+  background-color: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(50px);
+  z-index: 1;
+  margin: 0;
 }
 
-.header-container {
+.header__container {
   display: grid;
   grid-template-columns:  1fr 2fr;
   width: 1000px;
@@ -59,40 +51,40 @@ header {
   margin-right: auto;
 }
 
-.logo {
+.header__logo {
   margin: auto;
-  margin-left: 0px;
+  margin-left: 0;
 }
 
-.navigation {
+.header__navigation-list {
   display: flex;
   justify-content: flex-end;
-  margin: 0px;
-  padding: 0px;
-
+  margin: 0;
+  padding: 0;
 }
 
-.navigation-item {
-  margin: 0px;
+.header__navigation-item {
+  margin: 0;
   margin-left: 72px;
-  padding: 0px;
+  padding: 0;
 }
 
-.navigation-link {
+.header__navigation-link {
   display: block;
   font-weight: 100;
   font-size: 18px;
-  margin: 0px;
+  margin: 0;
   padding: 15px;
   border-radius: 2px;
 }
 
-.navigation-link,
-.navigation-link:visited {
+.header__navigation-link,
+.header__navigation-link:visited {
   color: #fff;
 }
 
-.navigation-link:hover {
+.header__navigation-link:hover {
   background-color: rgba(128, 128, 128, 0.7);
+  color: #fff;
 }
 </style>
