@@ -41,7 +41,7 @@ body {
 main {
   flex-grow: 1;
   margin: 0;
-  padding-top: 20px;
+  padding-top: 60px;
 }
 
 a:active,

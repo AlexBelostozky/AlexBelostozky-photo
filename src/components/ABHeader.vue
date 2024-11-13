@@ -1,5 +1,6 @@
 <template>
 	<header class="header">
+    <div class="container">
       <div class="header__container">
         <img class="header__logo" src="img/logo.png" width="240px" height=""  alt="Логотип">
 
@@ -19,7 +20,8 @@
           </ul>
         </nav>
       </div>
-    </header>
+    </div>
+  </header>
 </template>
 
 <script>
@@ -46,28 +48,28 @@ export default {
 }
 
 .header__container {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 60px;
 }
 
 .header__logo {
-  margin: auto;
-  margin-left: 0;
+  width: 240px;
+  height: auto;
 }
 
 .header__navigation-list {
   display: flex;
   justify-content: flex-end;
+  gap: min(20px, 1.3vw);
+  list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .header__navigation-item {
   margin: 0;
-  margin-left: 72px;
   padding: 0;
 }
 
