@@ -14,6 +14,7 @@ import ABFooter from './components/ABFooter.vue'
 
 export default {
   name: 'App',
+
   components: {
     ABHeader,
     ABFooter,
