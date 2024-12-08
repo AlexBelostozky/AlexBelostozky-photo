@@ -2,7 +2,12 @@
 	<header class="header">
     <div class="container">
       <div class="header__container">
-        <img class="header__logo" src="img/logo.png" width="240px" height=""  alt="Логотип">
+        <a
+          :href="isNotHomePage !== '/' ? '/' : null"
+          :aria-label="isNotHomePage ? 'На главную' : null"
+        >
+          <img class="header__logo" src="img/logo.png" width="240px" height=""  alt="Логотип">
+        </a>
 
         <nav class="header__navigation" id="top">
           <ul class="header__navigation-list" type="none">
@@ -27,8 +32,15 @@
 <script>
 export default {
   name: 'ABHeader',
+
   props: {
 
+  },
+
+  computed: {
+    isNotHomePage() {
+      return this.$route.path !== '/';
+    }
   }
 }
 </script>
@@ -80,6 +92,7 @@ export default {
   margin: 0;
   padding: 15px;
   border-radius: 2px;
+  transition: all .2s ease-in-out;
 }
 
 .header__navigation-link {
