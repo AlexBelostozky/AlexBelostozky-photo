@@ -45,62 +45,54 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import '../assets/styles/main.scss';
+<style lang="sass">
+@use "@styles/variables" as *
 
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: auto;
-  background-color: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(50px);
-  z-index: 1;
-  margin: 0;
-}
+.header
+  position: fixed
+  top: 0
+  width: 100%
+  height: auto
+  background-color: rgba(0, 0, 0, 0.75)
+  backdrop-filter: blur(50px)
+  z-index: 1
+  margin: 0
 
-.header__container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 60px;
-}
+.header__container
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 60px
 
-.header__logo {
-  width: 240px;
-  height: auto;
-}
+.header__logo
+  width: 240px
+  height: auto
 
-.header__navigation-list {
-  display: flex;
-  justify-content: flex-end;
-  gap: min(20px, 1.3vw);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+.header__navigation-list
+  display: flex
+  justify-content: flex-end
+  gap: min(20px, 1.3vw)
+  list-style: none
+  margin: 0
+  padding: 0
 
-.header__navigation-item {
-  margin: 0;
-  padding: 0;
-}
+.header__navigation-item
+  margin: 0
+  padding: 0
 
-.header__navigation-link {
-  display: block;
-  font-weight: 100;
-  font-size: 18px;
-  margin: 0;
-  padding: 15px;
-  border-radius: 2px;
-  transition: all .2s ease-in-out;
-}
+.header__navigation-link
+  display: block
+  font-weight: 100
+  font-size: 18px
+  margin: 0
+  padding: 15px
+  border-radius: 2px
+  transition: all .2s ease-in-out
 
-.header__navigation-link {
-  color: $white;
+.header__navigation-link
+  color: $white
 
-  &:hover {
-    background-color: rgba(128, 128, 128, 0.7);
-    color: $white;
-  }
-}
+  &:hover
+    background-color: rgba(128, 128, 128, 0.7)
+    color: $white
 </style>

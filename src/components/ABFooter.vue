@@ -37,51 +37,46 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import '../assets/styles/main.scss';
+<style lang="sass">
+@use "@styles/variables" as *
 
-.footer {
-  margin: 0;
-  padding: 0;
-  background-image: url('../../public/img/footer-bg.jpg');
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
-}
+.footer
+  margin: 0
+  padding: 0
+  background-image: url('@images/footer-bg.jpg')
+  background-repeat: no-repeat
+  background-size: 100% 100%
+  background-position: center
 
-.footer__container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: inherit;
-  margin: auto;
-  padding: 60px 0;
-}
+.footer__container
+  display: flex
+  justify-content: space-between
+  align-items: center
+  height: inherit
+  margin: auto
+  padding: 60px 0
 
-.footer__social-list {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 30px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+.footer__social-list
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 30px
+  list-style: none
+  margin: 0
+  padding: 0
 
-.footer__social-link {
-  display: block;
-  width: 35px;
-  height: 35px;
-  background-color: $white-light;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-}
+.footer__social-link
+  display: block
+  width: 35px
+  height: 35px
+  background-color: $white-light
+  mask-repeat: no-repeat
+  mask-position: center
+  mask-size: contain
 
-.footer__tel-link {
-  font-weight: 100;
-  font-size: 28px;
-  line-height: 33px;
-  color: $white;
-}
+.footer__tel-link
+  font-weight: 100
+  font-size: 28px
+  line-height: 33px
+  color: $white
 </style>

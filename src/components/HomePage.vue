@@ -101,6 +101,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="sass">
+@use "@styles/variables" as *
 
 </style>

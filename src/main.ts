@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from '../router';
 import { firebaseApp, firebaseAnalytics, db } from "./fireBaseConfig";
+import '@/assets/styles/main.sass'
 
 const app = createApp(App);
 

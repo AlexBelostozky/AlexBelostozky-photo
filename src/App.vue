@@ -22,33 +22,37 @@ export default {
 }
 </script>
 
-<style>
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  font-family: "SF Pro Rounded", ui-rounded, system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
+<style lang="sass">
+@use "@styles/variables" as *
 
-body {
-  font-style: normal;
-  margin: 0;
-  padding-top: 0;
-}
+#app
+  display: flex
+  flex-direction: column
+  height: 100dvh
+  font-family: "SF Pro Rounded", ui-rounded, system-ui, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  text-align: center
 
-main {
-  flex-grow: 1;
-  margin: 0;
-  padding-top: 60px;
-}
+body
+  font-style: normal
+  margin: 0
+  padding-top: 0
 
-a:active,
-a:hover,
-a {
-  text-decoration: none;
-  color: #ff9d6d;
-}
+main
+  flex-grow: 1
+  margin: 0
+  padding-top: 60px
+
+a
+  text-decoration: none
+  color: $blue
+
+  &:visited
+    color: $blue
+
+  &:active,
+  &:hover
+    text-decoration: none
+    color: $orange
 </style>
