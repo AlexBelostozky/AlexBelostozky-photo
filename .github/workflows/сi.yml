@@ -1,0 +1,36 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Шаг 2: Устанавливаем Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22 # Или используемая версия Node.js
+
+      # Шаг 3: Устанавливаем зависимости
+      - name: Install dependencies
+        run: npm install
+
+      # Шаг 4: Сборка проекта
+      - name: Build project
+        run: npm run build
+
+      # Шаг 5: Деплой на GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions-gh-pages-deploy/gh-pages@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          build_dir: dist
