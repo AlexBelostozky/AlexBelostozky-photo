@@ -26,6 +26,8 @@ jobs:
 
       # Шаг 4: Сборка проекта
       - name: Build project
+        env:
+          VUE_APP_FIREBASE_API_KEY: ${{ secrets.VUE_APP_FIREBASE_API_KEY }}
         run: npm run build
 
       # Шаг 5: Деплой на GitHub Pages
