@@ -3,10 +3,10 @@
     <div class="container">
       <div class="header__container">
         <a
-          :href="isNotHomePage !== '/' ? '/' : null"
+          :href="isNotHomePage ? '/' : null"
           :aria-label="isNotHomePage ? 'На главную' : null"
         >
-          <img class="header__logo" src="img/logo.png" width="240px" height=""  alt="Логотип">
+          <img class="header__logo" src="@images/logo.png" width="240px" height=""  alt="Логотип">
         </a>
 
         <nav class="header__navigation" id="top">
@@ -65,7 +65,9 @@ export default {
   gap: 60px
 
 .header__logo
+  display: block
   width: 240px
+  height: 29px
   height: auto
 
 .header__navigation-list
@@ -84,13 +86,14 @@ export default {
   display: block
   font-weight: 100
   font-size: 18px
+  color: $white
   margin: 0
   padding: 15px
   border-radius: 2px
   transition: all .2s ease-in-out
 
-.header__navigation-link
-  color: $white
+  &:visited
+    color: $white
 
   &:hover
     background-color: rgba(128, 128, 128, 0.7)

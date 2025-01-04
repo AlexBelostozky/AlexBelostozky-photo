@@ -7,7 +7,7 @@
             <a
               class="footer__social-link"
               href="https://www.instagram.com/alexbelostozky/"
-              style="mask-image: url(img/inst-icon.svg);"
+              :style="`mask-image: url(${instagramIcon})`"
               target="_blank"
             ></a>
           </li>
@@ -16,7 +16,7 @@
             <a
               class="footer__social-link"
               href="https://www.behance.net/alexbelostozky"
-              style="mask-image: url(img/behance-icon.svg);"
+              :style="`mask-image: url(${behanceIcon})`"
               target="_blank"
             ></a>
           </li>
@@ -29,11 +29,21 @@
 </template>
 
 <script>
+import instagramIcon from '@images/icons/inst-icon.svg';
+import behanceIcon from '@images/icons/behance-icon.svg';
+
 export default {
   name: 'ABFooter',
   props: {
 
-  }
+  },
+
+  data() {
+    return {
+      instagramIcon,
+      behanceIcon
+    };
+  },
 }
 </script>
 

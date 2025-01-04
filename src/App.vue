@@ -55,4 +55,7 @@ a
   &:hover
     text-decoration: none
     color: $orange
+
+  &:active
+    opacity: 0.7
 </style>
