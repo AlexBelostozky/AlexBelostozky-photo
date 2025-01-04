@@ -77,32 +77,32 @@ export default {
 			recentProjects: [
 				{
 					'name': 'Celsior',
-					'coverUrl': '/projects/celsior/celsior-cover.jpg',
+					'coverUrl': '<%= htmlWebpackPlugin.options.publicPath %>projects/celsior/celsior-cover.jpg',
 					'url': '/celsior'
 				},
 				{
 					'name': 'Laurel',
-					'coverUrl': '/projects/laurel/laurel-cover.jpg',
+					'coverUrl': '<%= htmlWebpackPlugin.options.publicPath %>projects/laurel/laurel-cover.jpg',
 					'url': '/laurel'
 				},
 				{
 					'name': 'Mark II',
-					'coverUrl': '/projects/mark/mark-cover.jpg',
+					'coverUrl': '<%= htmlWebpackPlugin.options.publicPath %>projects/mark/mark-cover.jpg',
 					'url': '/mark'
 				},
 				{
 					'name': 'Museum',
-					'coverUrl': '/projects/museum/museum-cover.jpg',
+					'coverUrl': '<%= htmlWebpackPlugin.options.publicPath %>projects/museum/museum-cover.jpg',
 					'url': '/museum'
 				},
 				{
 					'name': '2104',
-					'coverUrl': '/projects/2104/2104-cover.jpg',
+					'coverUrl': '<%= htmlWebpackPlugin.options.publicPath %>projects/2104/2104-cover.jpg',
 					'url': '/2104'
 				},
 				{
 					'name': 'Cresta',
-					'coverUrl': '/projects/cresta/cresta-cover.jpg',
+					'coverUrl': '<%= htmlWebpackPlugin.options.publicPath %>projects/cresta/cresta-cover.jpg',
 					'url': '/cresta'
 				},
 			]
