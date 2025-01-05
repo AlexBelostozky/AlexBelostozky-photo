@@ -151,9 +151,10 @@ export default {
 	margin: 0 0 24px
 
 .about-section__story-text
-	font-weight: 200
+	font-weight: 400
 	font-size: 18px
 	line-height: 27px
+	letter-spacing: -0.03em
 	text-align: left
 	margin: 0 0 16px
 
