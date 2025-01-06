@@ -6,9 +6,11 @@
 	>
 		<div class="container">
 			<div class="header__container">
-				<a
-					:href="isNotHomePage ? '/' : undefined"
-					:aria-label="isNotHomePage ? 'На главную' : undefined"
+				<router-link
+					v-if="isNotHomePage"
+					:to="{ name: 'Home' }"
+					aria-label="На главную"
+					@click="toggleMenu(false)"
 				>
 					<img
 						class="header__logo"
@@ -16,7 +18,15 @@
 						width="240px"
 						alt="Логотип"
 					>
-				</a>
+				</router-link>
+
+				<img
+					v-else
+					class="header__logo"
+					src="@images/logo.svg"
+					width="240px"
+					alt="Логотип"
+				>
 
 				<nav class="header__navigation" id="top">
 					<ABBurgerButton
@@ -31,28 +41,18 @@
 						class="header__navigation-list"
 						v-show="!isMobile || isMobileMenuShown"
 					>
-						<li class="header__navigation-item">
-							<a
+						<li
+							class="header__navigation-item"
+							v-for="link in linksList"
+							:key="link.url"
+						>
+							<component
+								:is="link.isRouter ? 'router-link' : 'a'"
 								class="header__navigation-link"
-								href="#about"
+								:to="link.isRouter ? { name: link.url } : undefined"
+								:href="link.isRouter ? undefined : link.url"
 								@click="toggleMenu(false)"
-							>Обо мне</a>
-						</li>
-
-						<li class="header__navigation-item">
-							<a
-								class="header__navigation-link"
-								href="#works"
-								@click="toggleMenu(false)"
-							>Мои работы</a>
-						</li>
-
-						<li class="header__navigation-item">
-							<a
-								class="header__navigation-link"
-								href="#contacts"
-								@click="toggleMenu(false)"
-							>Контакты</a>
+							>{{ link.name }}</component>
 						</li>
 					</ul>
 				</nav>
@@ -75,11 +75,28 @@ export default defineComponent({
 
 	data(): {
 		isMobileMenuShown: boolean;
-		isMobile: boolean
+		isMobile: boolean;
+		linksList: {
+			name: string;
+			url: string;
+			isRouter: boolean;
+		}[];
 	} {
 		return {
 			isMobileMenuShown: false,
 			isMobile: false,
+			linksList: [
+				{
+					name: 'Проекты',
+					url: 'Projects',
+					isRouter: true,
+				},
+				{
+					name: 'Контакты',
+					url: '#contacts',
+					isRouter: false,
+				},
+			],
 		}
 	},
 
@@ -202,6 +219,7 @@ export default defineComponent({
 	padding: 0
 
 .header__navigation-link
+	position: relative
 	display: block
 	font-weight: 100
 	font-size: 18px
@@ -221,4 +239,19 @@ export default defineComponent({
 	@include screen(sm)
 		&:hover
 			background-color: transparent
+
+.router-link-active::after,
+.router-link-exact-active::after
+	content: ''
+	position: absolute
+	bottom: 0
+	left: 15px
+	right: 15px
+	height: 3px
+	background-color: $white
+	border-radius: 3px 3px 0 0
+	opacity: 0.7
+
+	@include screen(sm)
+		content: none
 </style>
