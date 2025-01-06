@@ -62,9 +62,11 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
+import { useRoute } from 'vue-router';
 import ABBurgerButton from './UI/ABBurgerButton.vue';
 
-export default {
+export default defineComponent({
 	name: 'ABHeader',
 
 	props: {
@@ -81,9 +83,17 @@ export default {
 		}
 	},
 
+	setup() {
+		const route = useRoute();
+
+		return {
+			route,
+		};
+	},
+
 	computed: {
-		isNotHomePage() {
-			return this.$route.path !== '/';
+		isNotHomePage(): boolean {
+			return this.route.path !== '/';
 		}
 	},
 
@@ -128,7 +138,7 @@ export default {
 	components: {
 		ABBurgerButton,
 	}
-}
+})
 </script>
 
 <style lang="sass">
