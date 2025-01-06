@@ -12,7 +12,7 @@
 				>
 					<img
 						class="header__logo"
-						src="@images/logo.png"
+						src="@images/logo.svg"
 						width="240px"
 						alt="Логотип"
 					>
