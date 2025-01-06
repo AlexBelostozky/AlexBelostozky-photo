@@ -53,10 +53,7 @@ export default {
 .footer
   margin: 0
   padding: 0
-  background-image: url('@images/footer-bg.jpg')
-  background-repeat: no-repeat
-  background-size: 100% 100%
-  background-position: center
+  background: $dark-blue-gradient
 
 .footer__container
   display: flex
@@ -83,6 +80,12 @@ export default {
   mask-repeat: no-repeat
   mask-position: center
   mask-size: contain
+
+  &:hover
+    opacity: 0.8
+
+  &:active
+    opacity: 0.7
 
 .footer__tel-link
   font-weight: 100

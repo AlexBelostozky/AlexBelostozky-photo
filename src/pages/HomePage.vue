@@ -3,12 +3,16 @@
 		<div class="container" id="about">
 			<div class="about-section__grid">
 				<div class="about-section__portrait">
-					<img
-						src="@images/content/portrait.png"
-						width="248"
-						height="248"
-						alt="Александр Белостоцкий"
-					>
+					<picture>
+						<source srcset="@images/content/portrait.webp" type="image/webp">
+
+						<img
+							src="@images/content/portrait.png"
+							width="248"
+							height="248"
+							alt="Александр Белостоцкий"
+						>
+					</picture>
 				</div>
 
 				<div class="about-section__story">
@@ -120,11 +124,11 @@ export default {
 @use "@styles/mixins" as *
 
 .about-section
-	background-image: url('@images/bg.jpg')
+	background-image: image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-repeat: no-repeat
 	background-size: 100% 100%
 	background-position: center
-	background-size: inherit
+	background-size: cover
 	padding: 120px 0 70px
 
 .about-section__grid
