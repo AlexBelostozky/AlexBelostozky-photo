@@ -39,6 +39,7 @@ export default {
 
 <style lang="sass">
 @use "@styles/variables" as *
+@use "@styles/mixins" as *
 
 .project-item__link
 	display: flex
