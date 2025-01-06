@@ -1,4 +1,5 @@
 @use 'variables.sass' as *
+@use "@styles/mixins" as *
 
 html
 	scroll-behavior: smooth
@@ -9,6 +10,9 @@ html
 	max-width: 1060px
 	padding: 0 60px
 	margin: 0 auto
+
+	@include screen(sm)
+		padding: 0 min(5vw, 24px)
 
 #app
 	display: flex
@@ -23,6 +27,9 @@ body
 	font-style: normal
 	margin: 0
 	padding-top: 0
+
+.blocked-scroll
+	overflow: hidden
 
 a
 	text-decoration: none

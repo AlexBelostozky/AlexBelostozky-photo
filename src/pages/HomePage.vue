@@ -117,6 +117,7 @@ export default {
 
 <style lang="sass">
 @use "@styles/variables" as *
+@use "@styles/mixins" as *
 
 .about-section
 	background-image: url('@images/bg.jpg')
@@ -132,6 +133,9 @@ export default {
 	gap: 56px
 	width: 100%
 	margin: 0 auto
+
+	@include screen(sm)
+		display: block
 
 .about-section__portrait
 	img
@@ -151,9 +155,10 @@ export default {
 	margin: 0 0 24px
 
 .about-section__story-text
-	font-weight: 200
+	font-weight: 400
 	font-size: 18px
 	line-height: 27px
+	letter-spacing: -0.03em
 	text-align: left
 	margin: 0 0 16px
 
@@ -174,4 +179,10 @@ export default {
 	list-style: none
 	margin: 0px
 	padding: 0px
+
+	@include screen(sm)
+		grid-template-columns:  1fr 1fr
+
+	@include screen(xs)
+		grid-template-columns:  1fr
 </style>

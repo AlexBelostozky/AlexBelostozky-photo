@@ -1,0 +1,25 @@
+@use 'variables' as *
+
+@mixin screen($breakpoint)
+	@if $breakpoint == lg
+		@media (max-width: $breakpoint-lg)
+			@content
+
+	@if $breakpoint == md
+		@media (max-width: $breakpoint-md)
+			@content
+
+	@if $breakpoint == sm
+		@media (max-width: $breakpoint-sm)
+			@content
+
+	@if $breakpoint == xs
+		@media (max-width: $breakpoint-xs)
+			@content
+
+
+
+@mixin gradient-text($deg, $from, $to)
+	background: linear-gradient($deg, $from, $to)
+	-webkit-background-clip: text
+	-webkit-text-fill-color: transparent
