@@ -50,8 +50,6 @@ export default defineComponent({
 
 	&--expanded .burger-burger
 		div
-			transform-origin: 50% 50%
-			transform: rotateZ(-135deg)
 			opacity: 0
 
 		div:first-child
