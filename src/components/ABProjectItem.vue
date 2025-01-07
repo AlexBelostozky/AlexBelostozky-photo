@@ -52,6 +52,9 @@ export default {
 	color: $black-75
 	transition: all .2s ease-in-out
 
+	&:visited
+		color: $black-75
+
 	&:hover
 		color: $blue
 

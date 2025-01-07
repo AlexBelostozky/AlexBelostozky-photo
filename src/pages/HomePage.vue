@@ -4,10 +4,12 @@
 			<div class="about-section__grid">
 				<div class="about-section__portrait">
 					<picture>
-						<source srcset="@images/content/portrait.webp" type="image/webp">
+						<source media="(max-width: 768px)" srcset="@images/content/portrait-mobile.webp" type="image/webp">
+						<source media="(max-width: 768px)" srcset="@images/content/portrait-mobile.jpg" type="image/jpeg">
 
+						<source srcset="@images/content/portrait.webp" type="image/webp">
 						<img
-							src="@images/content/portrait.png"
+							src="@images/content/portrait.jpg"
 							width="248"
 							height="248"
 							alt="Александр Белостоцкий"
@@ -15,9 +17,9 @@
 					</picture>
 				</div>
 
-				<div class="about-section__story">
-					<h1 class="about-section__story-heading">Искусство во&nbsp;всём</h1>
+				<h1 class="about-section__story-heading">Искусство<br> во&nbsp;всём</h1>
 
+				<div class="about-section__story-text-wrapper">
 					<p class="about-section__story-text">
 						Ну&nbsp;или&nbsp;почти во&nbsp;всём 😀
 					</p>
@@ -126,7 +128,6 @@ export default {
 .about-section
 	background-color: $blue-dark
 	background-image: url('@images/bg.jpg')
-	// background-image: -webkit-image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-image: image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-repeat: no-repeat
 	background-size: 100% 100%
@@ -136,49 +137,95 @@ export default {
 
 	@include screen(sm)
 		background-image: url('@images/bg-mobile.jpg')
-		// background-image: -webkit-image-set(url('@images/bg-mobile.webp') type('image/webp'), url('@images/bg-mobile.jpg') type('image/jpeg'))
 		background-image: image-set(url('@images/bg-mobile.webp') type('image/webp'), url('@images/bg-mobile.jpg') type('image/jpeg'))
+		padding: 70px 0 40px
 
 .about-section__grid
 	display: grid
 	grid-template-columns:  284px 1fr
-	gap: 56px
+	grid-template-areas: 'portrait heading' 'portrait story'
+	grid-column-gap: 56px
 	width: 100%
 	margin: 0 auto
 
 	@include screen(sm)
-		display: block
+		grid-template-columns:  1fr 1fr
+		grid-template-areas: 'portrait heading' 'story story'
+		grid-column-gap: 26px
+		grid-row-gap: 22px
+
+	@include screen(xs)
+		grid-template-columns:  95px 1fr
 
 .about-section__portrait
+	grid-area: portrait
+	justify-self: end
+
+	picture
+		display: block
+		line-height: 0
+
 	img
 		width: 100%
 		height: auto
+		@include gradient-border-radius
 
-.about-section__story
-	color: $white
-	font-family: $font-sf
-	font-style: normal
+		@include screen(sm)
+			width: 95px
 
 .about-section__story-heading
+	grid-area: heading
+	font-family: $font-sf
 	font-weight: 600
 	font-size: 48px
 	line-height: 57px
 	text-align: left
+	color: $white
 	margin: 0 0 24px
 
+	br
+		display: none
+
+	@include screen(sm)
+		align-content: center
+		font-size: 24px
+		line-height: normal
+		margin: 0
+
+		br
+			display: inline
+
+	@include screen(xs)
+		align-content: end
+
+.about-section__story-text-wrapper
+	grid-area: story
+
 .about-section__story-text
+	font-family: $font-sf
 	font-weight: 400
 	font-size: 18px
 	line-height: 27px
 	letter-spacing: -0.03em
 	text-align: left
-	margin: 0 0 16px
+	color: $white
+	margin: 0
+
+	&:not(:last-child)
+		margin-bottom: 16px
 
 	a
 		color: $orange
 
 		&:visited
 			color: $orange
+
+	@include screen(sm)
+		font-size: 14px
+		line-height: 24px
+
+		&:not(:last-child)
+			margin-bottom: 8px
 
 .recent-section
 	padding: 50px 0

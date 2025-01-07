@@ -30,14 +30,12 @@ export default defineComponent({
 .not-found
 	min-height: 100vh
 	background-image: url('@images/404.jpg')
-	// background-image: -webkit-image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
 	background-image: image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
 	background-position: center center
 	background-size: cover
 
 	@include screen(sm)
 		background-image: url('@images/404-mobile.jpg')
-		// background-image: -webkit-image-set(url('@images/404-mobile.webp') type('image/webp'), url('@images/404-mobile.jpg') type('image/jpeg'))
 		background-image: image-set(url('@images/404-mobile.webp') type('image/webp'), url('@images/404-mobile.jpg') type('image/jpeg'))
 
 .not-found__grid
