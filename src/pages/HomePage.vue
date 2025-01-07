@@ -124,6 +124,8 @@ export default {
 @use "@styles/mixins" as *
 
 .about-section
+	background-image: url('@images/bg.jpg')
+	background: -webkit-image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-image: image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-repeat: no-repeat
 	background-size: 100% 100%

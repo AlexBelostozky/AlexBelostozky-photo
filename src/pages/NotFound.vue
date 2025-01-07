@@ -29,6 +29,8 @@ export default defineComponent({
 
 .not-found
 	min-height: 100dvh
+	background-image: url('@images/404.jpg')
+	background: -webkit-image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
 	background: image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
 	background-position: center center
 	background-size: cover
