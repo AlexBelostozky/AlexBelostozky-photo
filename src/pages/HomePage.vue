@@ -124,14 +124,20 @@ export default {
 @use "@styles/mixins" as *
 
 .about-section
+	background-color: $blue-dark
 	background-image: url('@images/bg.jpg')
-	background: -webkit-image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
+	// background-image: -webkit-image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-image: image-set(url('@images/bg.webp') type('image/webp'), url('@images/bg.jpg') type('image/jpeg'))
 	background-repeat: no-repeat
 	background-size: 100% 100%
 	background-position: center
 	background-size: cover
 	padding: 120px 0 70px
+
+	@include screen(sm)
+		background-image: url('@images/bg-mobile.jpg')
+		// background-image: -webkit-image-set(url('@images/bg-mobile.webp') type('image/webp'), url('@images/bg-mobile.jpg') type('image/jpeg'))
+		background-image: image-set(url('@images/bg-mobile.webp') type('image/webp'), url('@images/bg-mobile.jpg') type('image/jpeg'))
 
 .about-section__grid
 	display: grid
