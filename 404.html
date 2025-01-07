@@ -1,5 +1,3 @@
-<script>
-	const redirectPath = window.location.pathname + window.location.search;
-
-    window.location.href = '/' + `index.html?redirect=${redirectPath}`;
-</script>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redirecting...</title></head><body><script>const basePath = '/AlexBelostozky-photo/';
+			const redirectPath = window.location.pathname.replace(basePath, '') + window.location.search;
+			window.location.href = basePath + `/index.html?redirect=${redirectPath}`;</script></body></html>
