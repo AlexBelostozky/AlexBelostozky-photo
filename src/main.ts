@@ -12,4 +12,11 @@ app.provide('firebaseApp', firebaseApp);
 app.provide('firebaseAnalytics', firebaseAnalytics);
 app.provide('db', db);
 
+const params = new URLSearchParams(window.location.search);
+const redirect = params.get('redirect');
+
+if (redirect) {
+  router.push(redirect);
+}
+
 app.mount('#app');
