@@ -208,7 +208,7 @@ export default defineComponent({
 		flex-direction: column
 		justify-content: flex-start
 		align-items: flex-end
-		height: 100dvh
+		height: 100vh
 		background-color: $black-75
 		padding: 40px min(5vw, 24px)
 		backdrop-filter: blur(50px)

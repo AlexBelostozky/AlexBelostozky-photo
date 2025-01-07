@@ -28,16 +28,21 @@ export default defineComponent({
 @use "@styles/mixins" as *
 
 .not-found
-	min-height: 100dvh
+	min-height: 100vh
 	background-image: url('@images/404.jpg')
-	background: -webkit-image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
-	background: image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
+	// background-image: -webkit-image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
+	background-image: image-set(url('@images/404.webp') type('image/webp'), url('@images/404.jpg') type('image/jpeg'))
 	background-position: center center
 	background-size: cover
 
+	@include screen(sm)
+		background-image: url('@images/404-mobile.jpg')
+		// background-image: -webkit-image-set(url('@images/404-mobile.webp') type('image/webp'), url('@images/404-mobile.jpg') type('image/jpeg'))
+		background-image: image-set(url('@images/404-mobile.webp') type('image/webp'), url('@images/404-mobile.jpg') type('image/jpeg'))
+
 .not-found__grid
 	position: relative
-	height: 32dvh
+	height: 32vh
 	padding-top: 140px
 
 	@include screen(sm)
