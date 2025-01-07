@@ -16,6 +16,7 @@ const params = new URLSearchParams(window.location.search);
 const redirect = params.get('redirect');
 
 if (redirect) {
+  history.replaceState(null, '', window.location.pathname);
   router.push(redirect);
 }
 
