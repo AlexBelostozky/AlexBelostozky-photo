@@ -187,7 +187,7 @@ export default {
 		display: none
 
 	@include screen(sm)
-		align-content: center
+		align-self: center
 		font-size: 24px
 		line-height: normal
 		margin: 0
@@ -196,7 +196,7 @@ export default {
 			display: inline
 
 	@include screen(xs)
-		align-content: end
+		align-self: end
 
 .about-section__story-text-wrapper
 	grid-area: story
