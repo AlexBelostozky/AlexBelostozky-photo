@@ -64,6 +64,11 @@
 					:projectCoverUrl="project.coverUrl"
 				/>
 			</ul>
+
+			<router-link
+				v-if="projects.length > 5"
+				:to="{name: 'Projects'}"
+			>Все проекты</router-link>
 		</div>
 	</section>
 </template>
@@ -80,7 +85,7 @@ export default {
 
 	data: () => {
 		return {
-			recentProjects: [
+			projects: [
 				{
 					'name': 'Celsior',
 					'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
@@ -113,6 +118,12 @@ export default {
 				},
 			]
 		}
+	},
+
+	computed: {
+		recentProjects() {
+			return this.projects.slice(0, 6);
+		},
 	},
 
 	components: {

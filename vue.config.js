@@ -29,9 +29,9 @@ module.exports = defineConfig({
 			}),
 			// Плагин для 404.html
 			new HtmlWebpackPlugin({
-				template: './src/templates/404.html', // Убедитесь, что этот файл существует
+				template: './src/templates/404.html',
 				filename: '404.html',
-				inject: false, // Не добавляем автоматические теги
+				inject: false,
 				publicPath: process.env.NODE_ENV === 'production'
 					? '/AlexBelostozky-photo/'
 					: '/',
