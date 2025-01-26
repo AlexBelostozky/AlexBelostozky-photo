@@ -2,80 +2,169 @@
 	<div class="projects-section">
 		<h1 class="visually-hidden">Проекты</h1>
 
-		<div class="projects-section__filter-wrapper">
-			<div class="container">
-				<h2>Фильтры</h2>
+		<div v-if="!!showingProjects.length">
+			<div class="projects-section__filter-wrapper">
+				<div class="container">
+					<h2>Фильтры</h2>
+				</div>
+			</div>
+
+			<div class="projects-section__results">
+				<div class="container">
+					<div class="projects-section__results-grid">
+						<ul class="recent-section__list">
+							<template v-if="isLoading">
+								<ABProjectItemLoader
+									v-for="idx in limit"
+									:key="idx"
+									:loading="isLoading"
+								>
+									<ABProjectItem />
+								</ABProjectItemLoader>
+							</template>
+
+							<template v-else>
+								<ABProjectItem
+									v-for="project in showingProjects"
+									:key="project.url"
+									:projectName="project.name"
+									:projectUrl="project.url"
+									:projectCoverUrl="project.coverUrl"
+								/>
+							</template>
+						</ul>
+
+						<v-pagination
+							v-if="pagesAmount > 1"
+							v-model="page"
+							:length="pagesAmount"
+						></v-pagination>
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<div class="projects-section__results">
-			<div class="container">
-				<div class="projects-section__results-grid">
-
-					<ul class="recent-section__list">
-						<ABProjectItem
-							v-for="project in projects"
-							:key="project.url"
-							:projectName="project.name"
-							:projectUrl="project.url"
-							:projectCoverUrl="project.coverUrl"
-						/>
-					</ul>
-
-					<v-pagination
-						:length="8"
-					></v-pagination>
-				</div>
-			</div>
+		<div class="projects-section__empty-list"
+			v-else
+		>
+			<v-empty-state
+				title="Проекты не найдены..."
+				text="Давайте вместе создадим нечто прекрасное!"
+				:image="require('@images/no-projects.svg')"
+			/>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { ProjectType } from '@/assets/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
+import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
+
+interface CachedProjects {
+	[key: number]: Array<ProjectType>;
+}
+
+interface ProjectsPageData {
+	page: number,
+	limit: number,
+	isLoading: boolean,
+	cachedProjects: CachedProjects,
+	showingProjects: Array<ProjectType>,
+	totalProjects: number,
+}
 
 export default defineComponent({
 	name: 'ProjectsPage',
 
 	components: {
 		ABProjectItem,
+		ABProjectItemLoader,
 	},
 
-	data() {
+	data(): ProjectsPageData {
 		return {
-			projects: [
-				{
-					'name': 'Celsior',
-					'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
-					'url': '/celsior'
-				},
-				{
-					'name': 'Laurel',
-					'coverUrl': require('@images/content/projects/laurel/laurel-cover.jpg'),
-					'url': '/laurel'
-				},
-				{
-					'name': 'Mark II',
-					'coverUrl': require('@images/content/projects/mark/mark-cover.jpg'),
-					'url': '/mark'
-				},
-				{
-					'name': 'Museum',
-					'coverUrl': require('@images/content/projects/museum/museum-cover.jpg'),
-					'url': '/museum'
-				},
-				{
-					'name': '2104',
-					'coverUrl': require('@images/content/projects/2104/2104-cover.jpg'),
-					'url': '/2104'
-				},
-				{
-					'name': 'Cresta',
-					'coverUrl': require('@images/content/projects/cresta/cresta-cover.jpg'),
-					'url': '/cresta'
-				},
-			]
+			page: 1,
+			limit: 6,
+			isLoading: true,
+			cachedProjects: {
+				// 1: [
+				// 	{
+				// 		'name': 'Celsior',
+				// 		'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
+				// 		'url': '/celsior'
+				// 	},
+				// 	{
+				// 		'name': 'Laurel',
+				// 		'coverUrl': require('@images/content/projects/laurel/laurel-cover.jpg'),
+				// 		'url': '/laurel'
+				// 	},
+				// 	{
+				// 		'name': 'Mark II',
+				// 		'coverUrl': require('@images/content/projects/mark/mark-cover.jpg'),
+				// 		'url': '/mark'
+				// 	},
+				// 	{
+				// 		'name': 'Museum',
+				// 		'coverUrl': require('@images/content/projects/museum/museum-cover.jpg'),
+				// 		'url': '/museum'
+				// 	},
+				// 	{
+				// 		'name': '2104',
+				// 		'coverUrl': require('@images/content/projects/2104/2104-cover.jpg'),
+				// 		'url': '/2104'
+				// 	},
+				// 	{
+				// 		'name': 'Cresta',
+				// 		'coverUrl': require('@images/content/projects/cresta/cresta-cover.jpg'),
+				// 		'url': '/cresta'
+				// 	},
+				// ]
+			},
+			showingProjects: [],
+			totalProjects: 0,
+		}
+	},
+
+	methods: {
+		async getProjects (page: number, limit: number) {
+			if (this.cachedProjects[page]) {
+				this.showingProjects = this.cachedProjects[page];
+				this.isLoading = false;
+				return;
+			}
+
+			try {
+				this.isLoading = true;
+
+				const response = await fetch(`https://api.com/projects?page=${page}&limit=${limit}`);
+				const data = await response.json();
+				this.showingProjects = Array.isArray(data.projects) ? data.projects : [];
+				this.totalProjects = data.total || 0;
+			} catch (error) {
+				console.warn('Failed to get projects: ', error);
+			} finally {
+				this.isLoading = false;
+			}
+		},
+	},
+
+	mounted() {
+		if (!this.showingProjects.length) {
+			this.getProjects(this.page, this.limit);
+		}
+	},
+
+	computed: {
+		pagesAmount() {
+			return Math.ceil(this.totalProjects / this.limit);
+		}
+	},
+
+	watch: {
+		page(value) {
+			this.getProjects(value, this.limit);
 		}
 	}
 })
@@ -102,4 +191,10 @@ export default defineComponent({
 	display: flex
 	flex-direction: column
 	gap: 20px
+
+.projects-section__empty-list
+	display: flex
+	flex-direction: column
+	justify-content: center
+	min-height: 65vh
 </style>
