@@ -64,23 +64,33 @@
 					:projectCoverUrl="project.coverUrl"
 				/>
 			</ul>
+
+			<router-link
+				v-if="projects.length > 6"
+				:to="{name: 'Projects'}"
+			>Все проекты</router-link>
 		</div>
 	</section>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 
-export default {
+export default defineComponent({
 	name: 'HomePage',
 
 	props: {
 
 	},
 
+	components: {
+		ABProjectItem,
+	},
+
 	data: () => {
 		return {
-			recentProjects: [
+			projects: [
 				{
 					'name': 'Celsior',
 					'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
@@ -115,10 +125,20 @@ export default {
 		}
 	},
 
-	components: {
-		ABProjectItem,
+	methods: {
+		async getProjects (page: number, limit: number) {
+			const response = await fetch(`https://api.com/projects?page=${page}&limit=${limit}`);
+			const data = await response.json();
+			this.projects.push(data);
+		},
+	},
+
+	computed: {
+		recentProjects() {
+			return this.projects.slice(0, 6);
+		},
 	}
-}
+})
 </script>
 
 <style lang="sass">

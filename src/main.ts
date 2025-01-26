@@ -1,13 +1,15 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from '../router';
+import 'vuetify/styles'
+import vuetify from './plugins/vuetify'
 import { firebaseApp, firebaseAnalytics, db } from "./fireBaseConfig";
 import '@/assets/styles/main.sass'
 
 const app = createApp(App);
 
 app.use(router);
-
+app.use(vuetify);
 app.provide('firebaseApp', firebaseApp);
 app.provide('firebaseAnalytics', firebaseAnalytics);
 app.provide('db', db);

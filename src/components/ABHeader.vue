@@ -169,8 +169,7 @@ export default defineComponent({
 	height: auto
 	background-color: rgba(0, 0, 0, 0.75)
 	backdrop-filter: blur(50px)
-	z-index: 1
-	margin: 0
+	z-index: 10
 
 	@include screen(sm)
 		height: 40px
