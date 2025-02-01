@@ -1,6 +1,6 @@
 <template>
 	<li class="recent-section__item">
-		<a class="project-item__link" :href="projectUrl">
+		<router-link class="project-item__link" :to="projectUrl">
 			<div class="project-item__image-wrapper">
 				<img
 					class="project-item__image"
@@ -12,7 +12,7 @@
 			</div>
 
 			<span class="project-item__title">{{ projectName }}</span>
-		</a>
+		</router-link>
 	</li>
 </template>
 
