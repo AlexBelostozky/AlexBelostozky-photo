@@ -15,7 +15,7 @@
 						<ul class="recent-section__list">
 							<template v-if="isLoading">
 								<ABProjectItemLoader
-									v-for="idx in limit"
+									v-for="idx in projectsPerPage"
 									:key="idx"
 									:loading="isLoading"
 								>
@@ -29,7 +29,7 @@
 									:key="project.url"
 									:projectName="project.name"
 									:projectUrl="project.url"
-									:projectCoverUrl="project.coverUrl"
+									:projectCoverUrl="project.cover_url"
 								/>
 							</template>
 						</ul>
@@ -61,6 +61,9 @@ import { defineComponent } from 'vue';
 import { ProjectType } from '@/assets/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
+import { collection, getDocs, query, limit, startAfter, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+import { db } from '@/fireBaseConfig';
+
 
 interface CachedProjects {
 	[key: number]: Array<ProjectType>;
@@ -68,7 +71,8 @@ interface CachedProjects {
 
 interface ProjectsPageData {
 	page: number,
-	limit: number,
+	projectsPerPage: number,
+	lastVisible: QueryDocumentSnapshot<DocumentData, DocumentData> | null,
 	isLoading: boolean,
 	cachedProjects: CachedProjects,
 	showingProjects: Array<ProjectType>,
@@ -86,7 +90,8 @@ export default defineComponent({
 	data(): ProjectsPageData {
 		return {
 			page: 1,
-			limit: 6,
+			projectsPerPage: 6,
+			lastVisible: null,
 			isLoading: true,
 			cachedProjects: {
 				// 1: [
@@ -128,43 +133,61 @@ export default defineComponent({
 	},
 
 	methods: {
-		async getProjects (page: number, limit: number) {
+		async getProjectsFromFirebase(page: number, projectsPerPage: number) {
 			if (this.cachedProjects[page]) {
 				this.showingProjects = this.cachedProjects[page];
 				this.isLoading = false;
 				return;
 			}
-
 			try {
 				this.isLoading = true;
 
-				const response = await fetch(`https://api.com/projects?page=${page}&limit=${limit}`);
-				const data = await response.json();
-				this.showingProjects = Array.isArray(data.projects) ? data.projects : [];
-				this.totalProjects = data.total || 0;
+				const projectsRef = collection(db, 'projects');
+				const projectsQuery = this.lastVisible
+					? query(projectsRef, limit(projectsPerPage), startAfter(projectsPerPage))
+					: query(projectsRef, limit(projectsPerPage));
+
+				const snapshot = await getDocs(projectsQuery);
+				const fetchedProjects = snapshot.docs.map(doc => ({
+					id: Number(doc.id),
+					...(doc.data() as ProjectType),
+				}));
+
+				this.lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+				console.log(fetchedProjects);
+
+				fetchedProjects.forEach(project => {
+					if (!this.cachedProjects[this.page]) {
+						this.cachedProjects[this.page] = [];
+					}
+					this.cachedProjects[this.page].push(project);
+				});
+
+				this.showingProjects = fetchedProjects;
 			} catch (error) {
-				console.warn('Failed to get projects: ', error);
+				console.warn('Failed to get projects from Firebase: ', error)
 			} finally {
 				this.isLoading = false;
 			}
-		},
+		}
 	},
 
 	mounted() {
 		if (!this.showingProjects.length) {
-			this.getProjects(this.page, this.limit);
+			this.getProjectsFromFirebase(this.page, this.projectsPerPage);
 		}
 	},
 
 	computed: {
 		pagesAmount() {
-			return Math.ceil(this.totalProjects / this.limit);
+			return Math.ceil(this.totalProjects / this.projectsPerPage);
 		}
 	},
 
 	watch: {
 		page(value) {
-			this.getProjects(value, this.limit);
+			this.getProjectsFromFirebase(value, this.projectsPerPage);
 		}
 	}
 })
