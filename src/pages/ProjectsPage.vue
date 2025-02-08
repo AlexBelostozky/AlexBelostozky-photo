@@ -1,58 +1,52 @@
 <template>
 	<div class="projects-section">
-		<h1 class="visually-hidden">Проекты</h1>
-
-		<div v-if="!!showingProjects.length">
-			<div class="projects-section__filter-wrapper">
-				<div class="container">
-					<h2>Фильтры</h2>
-				</div>
+		<div class="projects-section__filter-wrapper" v-if="isLoading || showingProjects.length">
+			<div class="container">
+				<h2>Фильтры</h2>
 			</div>
+		</div>
 
-			<div class="projects-section__results">
-				<div class="container">
-					<div class="projects-section__results-grid">
-						<ul class="recent-section__list">
-							<template v-if="isLoading">
-								<ABProjectItemLoader
-									v-for="idx in projectsPerPage"
-									:key="idx"
-									:loading="isLoading"
-								>
-									<ABProjectItem />
-								</ABProjectItemLoader>
-							</template>
+		<div class="projects-section__results">
+			<div class="container">
+				<div class="projects-section__results-grid">
+					<ul class="recent-section__list">
+						<template v-if="isLoading">
+							<ABProjectItemLoader
+								v-for="idx in projectsPerPage"
+								:key="idx"
+								:loading="isLoading"
+							/>
+						</template>
 
-							<template v-else>
-								<ABProjectItem
-									v-for="project in showingProjects"
-									:key="project.url"
-									:projectName="project.name"
-									:projectUrl="project.url"
-									:projectCoverUrl="project.cover_url"
-								/>
-							</template>
-						</ul>
+						<template v-else-if="showingProjects.length">
+							<ABProjectItem
+								v-for="project in showingProjects"
+								:key="project.url"
+								:projectName="project.name"
+								:projectUrl="project.url"
+								:projectCoverUrl="project.cover_url"
+							/>
+						</template>
+					</ul>
 
-						<v-pagination
-							v-if="pagesAmount > 1"
-							v-model="page"
-							:length="pagesAmount"
-						></v-pagination>
-					</div>
+					<v-pagination
+						v-if="pagesAmount > 1"
+						v-model="page"
+						:length="pagesAmount"
+					/>
 				</div>
 			</div>
 		</div>
 
-		<div class="projects-section__empty-list"
-			v-else
-		>
-			<v-empty-state
-				title="Проекты не найдены..."
-				text="Давайте вместе создадим нечто прекрасное!"
-				:image="require('@images/no-projects.svg')"
-			/>
-		</div>
+		<template v-if="!showingProjects.length">
+			<div class="projects-section__empty-list">
+				<v-empty-state
+					title="Проекты не найдены..."
+					text="Давайте вместе создадим нечто прекрасное!"
+					:image="require('@images/no-projects.svg')"
+				/>
+			</div>
+		</template>
 	</div>
 </template>
 
@@ -134,12 +128,13 @@ export default defineComponent({
 	},
 
 	methods: {
-		async getProjectsFromFirebase(page: number, projectsPerPage: number) {
+		async showProjects(page: number, projectsPerPage: number) {
 			if (this.cachedProjects[page]) {
 				this.showingProjects = this.cachedProjects[page];
 				this.isLoading = false;
 				return;
 			}
+
 			try {
 				this.isLoading = true;
 
@@ -151,10 +146,10 @@ export default defineComponent({
 				this.lastVisible = lastFromSnapshot;
 
 				fetchedProjects.forEach(project => {
-					if (!this.cachedProjects[this.page]) {
-						this.cachedProjects[this.page] = [];
+					if (!this.cachedProjects[page]) {
+						this.cachedProjects[page] = [];
 					}
-					this.cachedProjects[this.page].push(project);
+					this.cachedProjects[page].push(project);
 				});
 
 				this.showingProjects = fetchedProjects;
@@ -168,7 +163,7 @@ export default defineComponent({
 
 	mounted() {
 		if (!this.showingProjects.length) {
-			this.getProjectsFromFirebase(this.page, this.projectsPerPage);
+			this.showProjects(this.page, this.projectsPerPage);
 		}
 	},
 
@@ -180,9 +175,9 @@ export default defineComponent({
 
 	watch: {
 		page(value) {
-			this.getProjectsFromFirebase(value, this.projectsPerPage);
+			this.showProjects(value, this.projectsPerPage);
 		}
-	}
+	},
 })
 </script>
 
@@ -196,12 +191,18 @@ export default defineComponent({
 	gap: 32px
 	padding: 60px 0 70px
 
+	@include screen(sm)
+		padding: 40px 0 30px
+
 .projects-section__filter-wrapper
 	position: sticky
 	top: 57px
 	background-color: $white-75
 	backdrop-filter: blur(6px)
 	z-index: 1
+
+	@include screen(sm)
+		top: 40px
 
 .projects-section__results-grid
 	display: flex

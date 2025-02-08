@@ -11,6 +11,7 @@ import {
 
 import { Collections } from "@/types/database"
 import { ProjectType } from "@/types/project";
+import { getImageUrl } from '@/utils';
 
 
 export const getProjects = async (
@@ -25,10 +26,14 @@ export const getProjects = async (
 
 	const snapshot = await getDocs(projectsQuery);
 
-	const fetchedProjects = snapshot.docs.map(doc => ({
-		id: Number(doc.id),
-		...(doc.data() as ProjectType),
-	}));
+	const fetchedProjects = snapshot.docs.map(doc => {
+		const projectData = doc.data() as ProjectType;
+		return {
+			id: Number(doc.id),
+			...projectData,
+			cover_url: getImageUrl(projectData.cover_url)
+		};
+	});
 
 	const lastFromSnapshot = snapshot.docs
 		? snapshot.docs[snapshot.docs.length - 1]

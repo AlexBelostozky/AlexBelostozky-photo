@@ -13,12 +13,4 @@ const cld = new Cloudinary({
 	},
 })
 
-// Get Image
-// const myImage = cld
-//   .image(props.publicId)
-//   .resize(thumbnail().width(300).height(300).gravity(autoGravity()))
-//   .delivery(format('auto'))
-//   .delivery(quality('auto'))
-// const plugins = [placeholder()]
-
-export default cld
+export { cld, cloudinaryConfig }
