@@ -25,13 +25,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Шаг 4: Сборка проекта
+      # Шаг 4: Экспорт всех секретов в переменные окружения
+      - name: Export all secrets as env variables
+        run: |
+          echo '${{ toJson(secrets) }}' | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' >> $GITHUB_ENV
+
+      # Шаг 5: Автоматическое создание .env-файла для Vue
+      - name: Create .env file
+        run: printenv | grep '^VUE_APP_' > .env
+
+      # Шаг 6: Сборка проекта
       - name: Build project
-        env:
-          VUE_APP_FIREBASE_API_KEY: ${{ secrets.VUE_APP_FIREBASE_API_KEY }}
         run: npm run build
 
-      # Шаг 5: Деплой на GitHub Pages
+      # Шаг 7: Деплой на GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
