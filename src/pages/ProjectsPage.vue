@@ -58,11 +58,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { ProjectType } from '@/assets/types/project';
+import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
-import { collection, getDocs, query, limit, startAfter, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
-import { db } from '@/fireBaseConfig';
+import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+
+import { getProjects } from '@/api';
 
 
 interface CachedProjects {
@@ -142,20 +143,12 @@ export default defineComponent({
 			try {
 				this.isLoading = true;
 
-				const projectsRef = collection(db, 'projects');
-				const projectsQuery = this.lastVisible
-					? query(projectsRef, limit(projectsPerPage), startAfter(projectsPerPage))
-					: query(projectsRef, limit(projectsPerPage));
+				const {
+					lastFromSnapshot,
+					fetchedProjects
+				} = await getProjects('projects', projectsPerPage, this.lastVisible);
 
-				const snapshot = await getDocs(projectsQuery);
-				const fetchedProjects = snapshot.docs.map(doc => ({
-					id: Number(doc.id),
-					...(doc.data() as ProjectType),
-				}));
-
-				this.lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
-				console.log(fetchedProjects);
+				this.lastVisible = lastFromSnapshot;
 
 				fetchedProjects.forEach(project => {
 					if (!this.cachedProjects[this.page]) {
