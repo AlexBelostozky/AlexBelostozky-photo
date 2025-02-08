@@ -38,7 +38,7 @@
 			</div>
 		</div>
 
-		<template v-if="!showingProjects.length">
+		<template v-if="!isLoading && !showingProjects.length">
 			<div class="projects-section__empty-list">
 				<v-empty-state
 					title="Проекты не найдены..."
