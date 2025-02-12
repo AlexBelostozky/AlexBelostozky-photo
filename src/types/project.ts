@@ -8,7 +8,7 @@ export type ProjectTags = {
 export type ProjectType = {
 	'name': string,
 	'cover_url': string,
-	'url': string,
+	'slug': string,
 	'images': Array<string>,
 	'description': string,
 	'tags': ProjectTags,

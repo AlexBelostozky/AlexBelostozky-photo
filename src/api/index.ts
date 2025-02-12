@@ -5,17 +5,18 @@ import {
 	query,
 	limit,
 	startAfter,
+	where,
 	QueryDocumentSnapshot,
 	DocumentData
 } from 'firebase/firestore';
 
-import { Collections } from "@/types/database"
+import { Collection } from "@/types/database"
 import { ProjectType } from "@/types/project";
 import { getImageUrl } from '@/utils';
 
 
 export const getProjects = async (
-	collectionName: Collections,
+	collectionName: Collection,
 	projectsAmount: number,
 	lastProject?: QueryDocumentSnapshot<DocumentData, DocumentData> | null,
 ) => {
@@ -40,4 +41,36 @@ export const getProjects = async (
 		: null;
 
 	return { lastFromSnapshot, fetchedProjects }
+}
+
+export const getProject = async (
+	collectionName: Collection,
+	projectSlug: string,
+) => {
+	const projectsRef = collection(db, collectionName);
+	const projectsQuery = query(projectsRef, where('slug', '==', projectSlug));
+
+	const snapshot = await getDocs(projectsQuery);
+
+	if (snapshot.empty) return null;
+
+	const fetchedProject = snapshot.docs.map(doc => {
+		const projectData = doc.data() as ProjectType;
+		const images: string[] = [];
+
+		projectData.images.forEach(image => {
+			images.push(getImageUrl(image))
+		})
+
+		console.log(images);
+
+		return {
+			id: Number(doc.id),
+			...projectData,
+			cover_url: getImageUrl(projectData.cover_url),
+			images: images,
+		};
+	});
+
+	return fetchedProject[0]
 }
