@@ -125,6 +125,7 @@ export default defineComponent({
 .project-section__tags-list
 	display: flex
 	gap: 15px
+	flex-wrap: wrap
 	list-style: none
 	margin: 0
 	padding: 0
