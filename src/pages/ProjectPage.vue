@@ -18,11 +18,10 @@
 				</ul>
 			</div>
 
-			<div class="project-section__description">
-				<p class="project-section__text">
-					{{ projectData?.description }}
-				</p>
-			</div>
+			<div
+				class="project-section__description"
+				v-html="renderMarkdown(projectData?.description || '')"
+			></div>
 
 			<div class="project-section__gallery">
 				<img
@@ -40,7 +39,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
-// import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+import { renderMarkdown } from '@/utils';
 
 import { getProject } from '@/api';
 
@@ -74,22 +73,15 @@ export default defineComponent({
 
 				const fetchedProject = await getProject('projects', projectSlug);
 
-				console.log(fetchedProject?.tags);
-
-				// fetchedProject.forEach(project => {
-				// 	if (!this.cachedProjects[page]) {
-				// 		this.cachedProjects[page] = [];
-				// 	}
-				// 	this.cachedProjects[page].push(project);
-				// });
-
 				this.projectData = fetchedProject;
 			} catch (error) {
 				console.warn('Failed to get project from Firebase: ', error)
 			} finally {
 				this.isLoading = false;
 			}
-		}
+		},
+
+		renderMarkdown,
 	},
 
 	mounted() {
@@ -149,9 +141,9 @@ export default defineComponent({
 	text-align: left
 	margin: 0 auto 40px
 
-.project-section__text
-	font-weight: 300
-	font-size: 18px
-	line-height: 27px
-	margin-bottom: 16px
+	p
+		font-weight: 300
+		font-size: 18px
+		line-height: 27px
+		margin-bottom: 16px
 </style>
