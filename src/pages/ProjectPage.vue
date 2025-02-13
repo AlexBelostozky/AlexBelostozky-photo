@@ -1,28 +1,32 @@
 <template>
 	<div class="project-section">
 		<div class="container">
-			<h1>{{ projectData?.name }}</h1>
+			<h1 class="project-section__heading">{{ projectData?.name }}</h1>
 
 			<div class="project-section__tags-wrapper">
 				<ul class="project-section__tags-list">
 					<li
+						class="project-section__tag-item"
 						v-for="(tagValue, tagKey) in projectData?.tags"
 						:key="tagKey"
-						class="project-section__tag-item"
 					>
+						<span class="project-section__tag-key">{{ tagKey }}: </span>
 						<router-link :to="`/projects?${ tagKey }=${encodeURIComponent(tagValue)}`">
-							{{ tagKey }}: {{ tagValue }}
+							{{ tagValue }}
 						</router-link>
 					</li>
 				</ul>
 			</div>
 
-			<p class="project-section__description">
-				{{ projectData?.description }}
-			</p>
+			<div class="project-section__description">
+				<p class="project-section__text">
+					{{ projectData?.description }}
+				</p>
+			</div>
 
 			<div class="project-section__gallery">
 				<img
+					class="project-section__photo"
 					v-for="image in projectData?.images"
 					:key="image"
 					:src="image"
@@ -115,4 +119,39 @@ export default defineComponent({
 	@include screen(sm)
 		padding: 60px 0 30px
 
+.project-section__heading
+	max-width: 600px
+	font-weight: 600
+	font-size: 48px
+	line-height: 57px
+	margin: 0 auto 24px
+
+.project-section__tags-wrapper
+	max-width: 600px
+	margin: 0 auto 16px
+
+.project-section__tags-list
+	display: flex
+	gap: 15px
+	list-style: none
+	margin: 0
+	padding: 0
+
+.project-section__tag-item
+	margin: 0
+	padding: 0
+
+.project-section__tag-key
+	text-transform: capitalize
+
+.project-section__description
+	max-width: 600px
+	text-align: left
+	margin: 0 auto 40px
+
+.project-section__text
+	font-weight: 300
+	font-size: 18px
+	line-height: 27px
+	margin-bottom: 16px
 </style>
