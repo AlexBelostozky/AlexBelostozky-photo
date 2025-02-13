@@ -146,5 +146,6 @@ export default defineComponent({
 		font-weight: 300
 		font-size: 18px
 		line-height: 27px
+		// text-wrap: balance
 		margin-bottom: 16px
 </style>

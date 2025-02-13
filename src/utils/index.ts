@@ -13,4 +13,7 @@ const md = new MarkdownIt({linkify: true}).use(markdownItLinkAttributes, {
 	}
 });
 
-export const renderMarkdown = (text: string) => md.render(text.replace(/\\n/g, '\n') || '');
+export const renderMarkdown = (text: string) => md.render(text
+	.replace(/\\n/g, '\n')
+	.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
+);
