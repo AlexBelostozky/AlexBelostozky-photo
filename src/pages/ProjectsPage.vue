@@ -21,9 +21,9 @@
 						<template v-else-if="showingProjects.length">
 							<ABProjectItem
 								v-for="project in showingProjects"
-								:key="project.url"
+								:key="project.slug"
 								:projectName="project.name"
-								:projectUrl="project.url"
+								:projectUrl="`/project/${ project.slug }`"
 								:projectCoverUrl="project.cover_url"
 							/>
 						</template>

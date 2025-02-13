@@ -1,4 +1,4 @@
-export type Collections =
+export type Collection =
 	'projects' |
 	'main'
 ;
