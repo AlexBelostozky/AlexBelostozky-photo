@@ -62,8 +62,6 @@ export const getProject = async (
 			images.push(getImageUrl(image))
 		})
 
-		console.log(images);
-
 		return {
 			id: Number(doc.id),
 			...projectData,
