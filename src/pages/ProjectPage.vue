@@ -24,13 +24,17 @@
 			></div>
 
 			<div class="project-section__gallery">
-				<img
-					class="project-section__photo"
+				<div
+					class="project-section__gallery-item"
 					v-for="image in projectData?.images"
 					:key="image"
-					:src="image"
-					:alt="projectData?.name"
 				>
+					<img
+						class="project-section__photo"
+						:src="image"
+						:alt="projectData?.name"
+					>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -146,6 +150,24 @@ export default defineComponent({
 		font-weight: 300
 		font-size: 18px
 		line-height: 27px
-		// text-wrap: balance
 		margin-bottom: 16px
+
+.project-section__gallery
+	display: grid
+	gap: 20px
+
+.project-section__gallery-item
+	position: relative
+	width: 100%
+	overflow: hidden
+
+	img
+		width: 100%
+		height: auto
+		max-height: 80vh
+		object-fit: contain
+
+.project-section__photo
+	// max-width: 100%
+	// max-height: 70vh
 </style>
