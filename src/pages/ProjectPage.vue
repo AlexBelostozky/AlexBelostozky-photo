@@ -24,7 +24,13 @@
 			></div>
 
 			<div class="project-section__gallery">
-				<div
+				<ABGallery
+					v-if="projectData"
+					:images="projectData?.images"
+					:projectName="projectData?.name"
+				/>
+
+				<!-- <div
 					class="project-section__gallery-item"
 					v-for="image in projectData?.images"
 					:key="image"
@@ -34,7 +40,7 @@
 						:src="image"
 						:alt="projectData?.name"
 					>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
@@ -44,6 +50,7 @@
 import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
 import { renderMarkdown } from '@/utils';
+import ABGallery from '@/components/ABGallery.vue';
 
 import { getProject } from '@/api';
 
@@ -56,7 +63,7 @@ export default defineComponent({
 	name: 'ProjectPage',
 
 	components: {
-
+		ABGallery,
 	},
 
 	data(): ProjectPageData {
@@ -151,23 +158,4 @@ export default defineComponent({
 		font-size: 18px
 		line-height: 27px
 		margin-bottom: 16px
-
-.project-section__gallery
-	display: grid
-	gap: 20px
-
-.project-section__gallery-item
-	position: relative
-	width: 100%
-	overflow: hidden
-
-	img
-		width: 100%
-		height: auto
-		max-height: 80vh
-		object-fit: contain
-
-.project-section__photo
-	// max-width: 100%
-	// max-height: 70vh
 </style>
