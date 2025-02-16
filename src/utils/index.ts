@@ -13,10 +13,16 @@ const md = new MarkdownIt({linkify: true}).use(markdownItLinkAttributes, {
 	}
 });
 
-export const renderMarkdown = (text: string) => md.render(text
-	.replace(/\\n/g, '\n')
-	.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
-);
+export const renderMarkdown = (text: string) => {
+	try {
+		md.render(text
+			.replace(/\\n/g, '\n')
+			.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
+		)
+	} catch (error) {
+		console.warn('Failed to render markdown: ', error);
+	}
+};
 
 export const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
 	return new Promise((resolve, reject) => {
