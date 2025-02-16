@@ -115,7 +115,7 @@ export default defineComponent({
 			const galleryGap = isNaN(parseFloat(gapValue)) ? 20 : parseFloat(gapValue);
 
 			const maxPortraitWidth = galleryWidth / 2 - galleryGap / 2;
-			const maxImageHeight = window.innerHeight * this.maxImageHeightScreenRatio;
+			const maxImageHeight = window.screen.height * this.maxImageHeightScreenRatio;
 
 			this.styledImages.forEach(image => {
 				if (image.orientation === 'portrait' && image.naturalWidth && image.naturalHeight) {
@@ -125,15 +125,15 @@ export default defineComponent({
 
 					image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
 
-					console.log(
-						'galleryWidth: ', galleryWidth,
-						'heightRatio: ', heightRatio,
-						'this.maxImageHeight: ', maxImageHeight,
-						'canImageBeFull: ', canImageBeFull,
-						'image.maxWidth: ', image.maxWidth,
+					// console.log(
+					// 	'galleryWidth: ', galleryWidth,
+					// 	'heightRatio: ', heightRatio,
+					// 	'this.maxImageHeight: ', maxImageHeight,
+					// 	'canImageBeFull: ', canImageBeFull,
+					// 	'image.maxWidth: ', image.maxWidth,
 
-						'galleryGap: ', galleryGap
-					);
+					// 	'galleryGap: ', galleryGap
+					// );
 				}
 			});
 
