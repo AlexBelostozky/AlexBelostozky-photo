@@ -17,3 +17,12 @@ export const renderMarkdown = (text: string) => md.render(text
 	.replace(/\\n/g, '\n')
 	.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
 );
+
+export const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.src = url;
+		img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+		img.onerror = reject;
+	});
+};

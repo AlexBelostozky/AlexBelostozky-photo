@@ -22,26 +22,14 @@
 				class="project-section__description"
 				v-html="renderMarkdown(projectData?.description || '')"
 			></div>
+		</div>
 
-			<div class="project-section__gallery">
-				<ABGallery
-					v-if="projectData"
-					:images="projectData?.images"
-					:projectName="projectData?.name"
-				/>
-
-				<!-- <div
-					class="project-section__gallery-item"
-					v-for="image in projectData?.images"
-					:key="image"
-				>
-					<img
-						class="project-section__photo"
-						:src="image"
-						:alt="projectData?.name"
-					>
-				</div> -->
-			</div>
+		<div class="project-section__gallery">
+			<ABGallery
+				v-if="projectData"
+				:images="projectData?.images"
+				:projectName="projectData?.name"
+			/>
 		</div>
 	</div>
 </template>
