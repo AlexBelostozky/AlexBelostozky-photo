@@ -124,20 +124,8 @@ export default defineComponent({
 					const canImageBeFull = galleryWidth * heightRatio <= (maxImageHeight);
 
 					image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
-
-					// console.log(
-					// 	'galleryWidth: ', galleryWidth,
-					// 	'heightRatio: ', heightRatio,
-					// 	'this.maxImageHeight: ', maxImageHeight,
-					// 	'canImageBeFull: ', canImageBeFull,
-					// 	'image.maxWidth: ', image.maxWidth,
-
-					// 	'galleryGap: ', galleryGap
-					// );
 				}
 			});
-
-			// this.maxPortraitWidth = maxPortraitWidth;
 		}
 	},
 
