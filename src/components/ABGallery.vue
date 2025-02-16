@@ -15,6 +15,16 @@
 						:alt="idx + ' фото проекта ' + projectName"
 					>
 				</div>
+
+				<!-- <img
+					class="gallery__image"
+					v-for="(image, idx) in styledImages"
+					:key="idx"
+					:class="{'gallery__image--portrait' : image.orientation === 'portrait'}"
+					:src="image.url"
+					:style="`width: ${image.maxWidth}`"
+					:alt="idx + ' фото проекта ' + projectName"
+				> -->
 			</div>
 		</div>
 	</div>
@@ -36,7 +46,7 @@ interface ImageData {
 }
 
 interface Gallery {
-	maxImageHeight: number,
+	maxImageHeightScreenRatio: number,
 	maxPortraitWidth: number | null,
 	isImagesLoading: boolean,
 	styledImages: Array<ImageData> | [],
@@ -62,7 +72,7 @@ export default defineComponent({
 
 	data(): Gallery {
 		return {
-			maxImageHeight: window.innerHeight * 0.85,
+			maxImageHeightScreenRatio: 0.85,
 			maxPortraitWidth: null,
 			isImagesLoading: true,
 			styledImages: [],
@@ -71,8 +81,6 @@ export default defineComponent({
 
 	methods: {
 		async mapImages() {
-			this.maxImageHeight = window.innerHeight * 0.85;
-
 			try {
 				this.isImagesLoading = true;
 
@@ -107,24 +115,29 @@ export default defineComponent({
 			const galleryGap = isNaN(parseFloat(gapValue)) ? 20 : parseFloat(gapValue);
 
 			const maxPortraitWidth = galleryWidth / 2 - galleryGap / 2;
+			const maxImageHeight = window.innerHeight * this.maxImageHeightScreenRatio;
 
 			this.styledImages.forEach(image => {
 				if (image.orientation === 'portrait' && image.naturalWidth && image.naturalHeight) {
 					const heightRatio = image.naturalHeight / image.naturalWidth;
 
-					const canImageBeFull = galleryWidth * heightRatio <= (this.maxImageHeight);
+					const canImageBeFull = galleryWidth * heightRatio <= (maxImageHeight);
 
 					image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
+
 					console.log(
+						'galleryWidth: ', galleryWidth,
+						'heightRatio: ', heightRatio,
+						'this.maxImageHeight: ', maxImageHeight,
 						'canImageBeFull: ', canImageBeFull,
 						'image.maxWidth: ', image.maxWidth,
-						'galleryWidth: ', galleryWidth,
+
 						'galleryGap: ', galleryGap
 					);
 				}
 			});
 
-			this.maxPortraitWidth = maxPortraitWidth;
+			// this.maxPortraitWidth = maxPortraitWidth;
 		}
 	},
 
