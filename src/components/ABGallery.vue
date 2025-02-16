@@ -62,7 +62,7 @@ export default defineComponent({
 
 	data(): Gallery {
 		return {
-			maxImageHeight: window.innerHeight * 0.82,
+			maxImageHeight: window.innerHeight * 0.85,
 			maxPortraitWidth: null,
 			isImagesLoading: true,
 			styledImages: [],
@@ -71,7 +71,7 @@ export default defineComponent({
 
 	methods: {
 		async mapImages() {
-			this.maxImageHeight = window.innerHeight * 0.82;
+			this.maxImageHeight = window.innerHeight * 0.85;
 
 			try {
 				this.isImagesLoading = true;
@@ -115,12 +115,12 @@ export default defineComponent({
 					const canImageBeFull = galleryWidth * heightRatio <= (this.maxImageHeight);
 
 					image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
-					// console.log(
-					// 	'canImageBeFull: ', canImageBeFull,
-					// 	'image.maxWidth: ', image.maxWidth,
-					// 	'galleryWidth: ', galleryWidth,
-					// 	'galleryGap: ', galleryGap
-					// );
+					console.log(
+						'canImageBeFull: ', canImageBeFull,
+						'image.maxWidth: ', image.maxWidth,
+						'galleryWidth: ', galleryWidth,
+						'galleryGap: ', galleryGap
+					);
 				}
 			});
 
@@ -165,6 +165,6 @@ export default defineComponent({
 	width: auto
 	height: auto
 	max-width: 100%
-	max-height: 82vh
+	max-height: 85vh
 	object-fit: contain
 </style>
