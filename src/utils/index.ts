@@ -14,13 +14,32 @@ const md = new MarkdownIt({linkify: true}).use(markdownItLinkAttributes, {
 });
 
 export const renderMarkdown = (text: string) => {
+		// Doesn't work on old browsers...
+		// md.render(text
+		// 	.replace(/\\n/g, '\n')
+		// 	.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
+		// )
 	try {
-		md.render(text
-			.replace(/\\n/g, '\n')
-			.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
-		)
+		const processedText = text.replace(/\\n/g, '\n');
+		let newResult = processedText;
+
+		// eslint-disable-next-line no-constant-condition
+		while (true) {
+			const replaced = newResult.replace(/((?:^|;|\s))([\p{L}\d]{1,4})(,?)\s/gu, '$1$2$3&nbsp;');
+			console.log(replaced);
+
+			if (replaced === newResult) {
+				break;
+			}
+
+			newResult = replaced;
+		}
+
+		return md.render(newResult || text);
 	} catch (error) {
 		console.warn('Failed to render markdown: ', error);
+
+		return text;
 	}
 };
 
