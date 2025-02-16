@@ -37,6 +37,9 @@ module.exports = defineConfig({
 					: '/',
 			}),
 		],
+		optimization: {
+			minimize: false,
+		}
 	},
 
 	chainWebpack: (config) => {
