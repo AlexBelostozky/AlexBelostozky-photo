@@ -15,16 +15,6 @@
 						:alt="idx + ' фото проекта ' + projectName"
 					>
 				</div>
-
-				<!-- <img
-					class="gallery__image"
-					v-for="(image, idx) in styledImages"
-					:key="idx"
-					:class="{'gallery__image--portrait' : image.orientation === 'portrait'}"
-					:src="image.url"
-					:style="`width: ${image.maxWidth}`"
-					:alt="idx + ' фото проекта ' + projectName"
-				> -->
 			</div>
 		</div>
 	</div>
@@ -33,8 +23,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { ProjectType } from '@/types/project';
-import { getImageDimensions } from '@/utils';
-// import { image } from '@cloudinary/url-gen/qualifiers/source';
 // import { getImageDimensions } from '@/utils';
 
 interface ImageData {
@@ -85,19 +73,15 @@ export default defineComponent({
 				this.isImagesLoading = true;
 
 				this.styledImages = await Promise.all(
-					this.images.map(async image => {
-						const {width, height} = await getImageDimensions(image);
-						const safeWidth = width ?? 0;
-						const safeHeight = height ?? 0;
-
+					this.images.map(async (imageData) => {
 						return {
-							url: image,
-							orientation: safeWidth && safeHeight && safeWidth > safeHeight ? 'landscape' : 'portrait',
-							naturalWidth: safeWidth,
-							naturalHeight: safeHeight,
+							url: imageData.url,
+							orientation: imageData.width > imageData.height ? 'landscape' : 'portrait',
+							naturalWidth: imageData.width,
+							naturalHeight: imageData.height,
 						}
 					})
-				)
+				);
 
 				this.styleImages();
 			} catch (error) {
@@ -108,25 +92,29 @@ export default defineComponent({
 		},
 
 		styleImages() {
-			const galleryElement = this.$refs.gallery as HTMLElement;
-			const galleryWidth = galleryElement.clientWidth;
-			const computedGalleryStyles = window.getComputedStyle(galleryElement);
-			const gapValue = computedGalleryStyles.getPropertyValue('gap');
-			const galleryGap = isNaN(parseFloat(gapValue)) ? 20 : parseFloat(gapValue);
+			try {
+				const galleryElement = this.$refs.gallery as HTMLElement;
 
-			const maxPortraitWidth = galleryWidth / 2 - galleryGap / 2;
-			const maxImageHeight = window.screen.height * this.maxImageHeightScreenRatio;
+				const galleryWidth = galleryElement.clientWidth;
+				const gapValue = window.getComputedStyle(galleryElement).getPropertyValue('gap');
+				const galleryGap = isNaN(parseFloat(gapValue)) ? 20 : parseFloat(gapValue);
 
-			this.styledImages.forEach(image => {
-				if (image.orientation === 'portrait' && image.naturalWidth && image.naturalHeight) {
-					const heightRatio = image.naturalHeight / image.naturalWidth;
+				const maxPortraitWidth = galleryWidth / 2 - galleryGap / 2;
+				const maxImageHeight = window.screen.height * this.maxImageHeightScreenRatio;
 
-					const canImageBeFull = galleryWidth * heightRatio <= (maxImageHeight);
+				this.styledImages.forEach((image) => {
+					if (image.orientation === 'portrait' && image.naturalWidth && image.naturalHeight) {
+						const heightRatio = image.naturalHeight / image.naturalWidth;
 
-					image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
-				}
-			});
-		}
+						const canImageBeFull = galleryWidth * heightRatio <= maxImageHeight;
+
+						image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
+					}
+				});
+			} catch (error) {
+				console.log('Failed to style images: ', error);
+			}
+		},
 	},
 
 	beforeMount() {

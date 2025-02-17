@@ -56,17 +56,19 @@ export const getProject = async (
 
 	const fetchedProject = snapshot.docs.map(doc => {
 		const projectData = doc.data() as ProjectType;
-		const images: string[] = [];
 
-		projectData.images.forEach(image => {
-			images.push(getImageUrl(image))
+		const mappedImages = projectData?.images?.map(imageData => {
+			return {
+				...imageData,
+				url: getImageUrl(imageData.url)
+			}
 		})
 
 		return {
 			id: Number(doc.id),
 			...projectData,
 			cover_url: getImageUrl(projectData.cover_url),
-			images: images,
+			images: mappedImages,
 		};
 	});
 
