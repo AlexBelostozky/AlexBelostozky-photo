@@ -36,10 +36,7 @@ module.exports = defineConfig({
 					? '/AlexBelostozky-photo/'
 					: '/',
 			}),
-		],
-		optimization: {
-			minimize: false,
-		}
+		]
 	},
 
 	chainWebpack: (config) => {
