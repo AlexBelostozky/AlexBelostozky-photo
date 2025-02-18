@@ -62,7 +62,7 @@ export default defineComponent({
 				this.isImagesLoading = true;
 
 				this.styledImages = await Promise.all(
-					this.images.map(async (imageData) => {
+					this.images.map(async imageData => {
 						return {
 							url: imageData.url,
 							orientation: imageData.width > imageData.height ? 'landscape' : 'portrait',
@@ -92,7 +92,7 @@ export default defineComponent({
 				const maxPortraitWidth = galleryWidth / 2 - galleryGap / 2;
 				const maxImageHeight = window.screen.height * this.maxImageHeightScreenRatio;
 
-				this.styledImages.forEach((image) => {
+				this.styledImages.forEach(image => {
 					if (image.orientation === 'portrait' && image.naturalWidth && image.naturalHeight) {
 						const canImageBeFull = galleryWidth * image.heightRatio <= maxImageHeight;
 
