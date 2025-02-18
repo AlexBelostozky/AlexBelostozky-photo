@@ -7,13 +7,13 @@
 				<ul class="project-section__tags-list">
 					<li
 						class="project-section__tag-item"
-						v-for="(tagValue, tagKey) in projectData?.tags"
-						:key="tagKey"
+						v-for="([tagKey, tagValue], idx) in sortedTags"
+						:key="idx"
 					>
 						<span class="project-section__tag-key">{{ tagKey }}: </span>
-						<router-link :to="`/projects?${ tagKey }=${encodeURIComponent(tagValue)}`">
-							{{ tagValue }}
-						</router-link>
+						<router-link
+							:to="`/projects?${ tagKey }=${ encodeURIComponent(tagValue.toString()) }`"
+						>{{ tagValue }}</router-link>
 					</li>
 				</ul>
 			</div>
@@ -31,12 +31,17 @@
 				:projectName="projectData?.name"
 			/>
 		</div>
+
+		<router-link
+			:to="backLink"
+		>Все&nbsp;проекты</router-link>
 	</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
+import { getPreviousRoute } from '@/router';
 import { renderMarkdown } from '@/utils';
 import ABGallery from '@/components/ABGallery.vue';
 
@@ -88,12 +93,35 @@ export default defineComponent({
 	},
 
 	computed: {
+		sortedTags(): [string, string | number][] {
+			if (!this.projectData || !this.projectData.tags ) return [];
 
-	},
+			const order = ['make', 'model', 'chassis', 'year'];
 
-	watch: {
+			return Object.entries(this.projectData.tags).sort((a, b) => {
+				const indexA = order.indexOf(a[0]);
+				const indexB = order.indexOf(b[0]);
 
-	},
+				if (indexA === -1 && indexB === -1) {
+					return a[0].localeCompare(b[0]);
+				}
+
+				if (indexA === -1) return 1;
+				if (indexB === -1) return -1;
+				return indexA - indexB;
+			});
+		},
+
+		backLink() {
+			const prev = getPreviousRoute();
+
+			if (prev && prev.name !== 'Home') {
+				return prev.fullPath
+			} else {
+				return { name: 'Projects' }
+			}
+		}
+	}
 })
 </script>
 
