@@ -3,17 +3,14 @@
 		<div class="container container--mobile-extended">
 			<div class="gallery__grid" ref="gallery">
 				<div
-					class="gallery__item"
+					class="gallery__item-wrapper"
 					v-for="(image, idx) in styledImages"
 					:key="idx"
 				>
-					<img
-						class="gallery__image"
-						:class="{'gallery__image--portrait' : image.orientation === 'portrait'}"
-						:src="image.url"
-						:style="`width: ${image.maxWidth}`"
+					<ABGalleryItem
+						:image-data="image"
 						:alt="idx + ' фото проекта ' + projectName"
-					>
+					/>
 				</div>
 			</div>
 		</div>
@@ -22,29 +19,21 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { ProjectType } from '@/types/project';
-// import { getImageDimensions } from '@/utils';
-
-interface ImageData {
-	url: string,
-	orientation: 'landscape' | 'portrait',
-	naturalWidth: number | null,
-	naturalHeight: number | null,
-	maxWidth?: string;
-}
+import { ProjectType, StyledImageData } from '@/types/project';
+import ABGalleryItem from './ABGalleryItem.vue';
 
 interface Gallery {
 	maxImageHeightScreenRatio: number,
 	maxPortraitWidth: number | null,
 	isImagesLoading: boolean,
-	styledImages: Array<ImageData> | [],
+	styledImages: Array<StyledImageData> | [],
 }
 
 export default defineComponent({
 	name: 'ABGallery',
 
 	components: {
-
+		ABGalleryItem,
 	},
 
 	props: {
@@ -79,6 +68,7 @@ export default defineComponent({
 							orientation: imageData.width > imageData.height ? 'landscape' : 'portrait',
 							naturalWidth: imageData.width,
 							naturalHeight: imageData.height,
+							heightRatio: imageData.height / imageData.width,
 						}
 					})
 				);
@@ -104,11 +94,11 @@ export default defineComponent({
 
 				this.styledImages.forEach((image) => {
 					if (image.orientation === 'portrait' && image.naturalWidth && image.naturalHeight) {
-						const heightRatio = image.naturalHeight / image.naturalWidth;
-
-						const canImageBeFull = galleryWidth * heightRatio <= maxImageHeight;
+						const canImageBeFull = galleryWidth * image.heightRatio <= maxImageHeight;
 
 						image.maxWidth = canImageBeFull ? galleryWidth + 'px' : maxPortraitWidth + 'px';
+					} else if (image.orientation === 'landscape') {
+						image.maxWidth = galleryWidth + 'px';
 					}
 				});
 			} catch (error) {
@@ -128,10 +118,6 @@ export default defineComponent({
 	beforeUnmount() {
 		window.removeEventListener('resize', this.styleImages);
 	},
-
-	computed: {
-		// maxImageHeight: 9,
-	}
 })
 </script>
 
@@ -145,15 +131,7 @@ export default defineComponent({
 	justify-content: space-evenly
 	gap: 20px
 
-.gallery__item
+.gallery__item-wrapper
 	width: auto
 	max-width: 100%
-
-.gallery__image
-	display: block
-	width: auto
-	height: auto
-	max-width: 100%
-	max-height: 85vh
-	object-fit: contain
 </style>
