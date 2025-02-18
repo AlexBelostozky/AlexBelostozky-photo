@@ -33,19 +33,28 @@
 		</div>
 
 		<router-link
+			class="project-section__link"
 			:to="backLink"
-		>Все&nbsp;проекты</router-link>
+		>
+			<v-icon
+				icon="mdil-chevron-left"
+			></v-icon>
+			Все&nbsp;проекты
+		</router-link>
+
+		<ABScrollTopButton />
 	</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
-import { getPreviousRoute } from '@/router';
+import { getPreviousRoute } from '@/router/index';
 import { renderMarkdown } from '@/utils';
 import ABGallery from '@/components/ABGallery.vue';
 
 import { getProject } from '@/api';
+import ABScrollTopButton from '@/components/UI/ABScrollTopButton.vue';
 
 interface ProjectPageData {
 	isLoading: boolean,
@@ -57,6 +66,7 @@ export default defineComponent({
 
 	components: {
 		ABGallery,
+		ABScrollTopButton,
 	},
 
 	data(): ProjectPageData {
@@ -133,7 +143,7 @@ export default defineComponent({
 	display: flex
 	flex-direction: column
 	gap: 32px
-	padding: 80px 0 70px
+	padding: 80px 0 32px
 
 	@include screen(sm)
 		padding: 60px 0 30px
@@ -174,4 +184,11 @@ export default defineComponent({
 		font-size: 18px
 		line-height: 27px
 		margin-bottom: 16px
+
+.project-section__link
+	display: flex
+	width: fit-content
+	margin: 0 auto
+	padding: 15px
+
 </style>
