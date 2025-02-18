@@ -11,9 +11,9 @@
 						:key="idx"
 					>
 						<span class="project-section__tag-key">{{ tagKey }}: </span>
-						<router-link :to="`/projects?${ tagKey }=${encodeURIComponent(tagValue.toString())}`">
-							{{ tagValue }}
-						</router-link>
+						<router-link
+							:to="`/projects?${ tagKey }=${ encodeURIComponent(tagValue.toString()) }`"
+						>{{ tagValue }}</router-link>
 					</li>
 				</ul>
 			</div>
@@ -31,12 +31,17 @@
 				:projectName="projectData?.name"
 			/>
 		</div>
+
+		<router-link
+			:to="backLink"
+		>Все&nbsp;проекты</router-link>
 	</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
+import { getPreviousRoute } from '@/router';
 import { renderMarkdown } from '@/utils';
 import ABGallery from '@/components/ABGallery.vue';
 
@@ -105,6 +110,16 @@ export default defineComponent({
 				if (indexB === -1) return -1;
 				return indexA - indexB;
 			});
+		},
+
+		backLink() {
+			const prev = getPreviousRoute();
+
+			if (prev && prev.name !== 'Home') {
+				return prev.fullPath
+			} else {
+				return { name: 'Projects' }
+			}
 		}
 	}
 })

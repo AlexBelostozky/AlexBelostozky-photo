@@ -1,5 +1,10 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import HomePage from '../src/pages/HomePage.vue';
+import {
+	createRouter,
+	createWebHistory,
+	RouteRecordRaw,
+	RouteLocationNormalized
+} from 'vue-router';
+import HomePage from '@/pages/HomePage.vue';
 import NotFound from '@/pages/NotFound.vue';
 import ProjectsPage from '@/pages/ProjectsPage.vue';
 import ProjectPage from '@/pages/ProjectPage.vue';
@@ -31,5 +36,15 @@ const router = createRouter({
 	history: createWebHistory(process.env.BASE_URL),
 	routes
 });
+
+let previousRoute: RouteLocationNormalized | null = null;
+export const getPreviousRoute = () => previousRoute;
+
+router.beforeEach((to, from, next) => {
+	if (from.name) {
+		previousRoute = from;
+	}
+	next();
+  });
 
 export default router;
