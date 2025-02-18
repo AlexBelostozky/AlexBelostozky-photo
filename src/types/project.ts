@@ -4,6 +4,15 @@ export interface ImageData {
 	height: number;
 }
 
+export type StyledImageData = {
+	url: string,
+	orientation: 'landscape' | 'portrait',
+	naturalWidth: number | null,
+	naturalHeight: number | null,
+	maxWidth?: string;
+	heightRatio: number,
+}
+
 export type ProjectTags = {
 	chassis: string;
 	make: string;
