@@ -1,10 +1,17 @@
 <template>
 	<div class="project-section">
 		<div class="container">
-			<h1 class="project-section__heading">{{ projectData?.name }}</h1>
+			<v-skeleton-loader class="project-section__heading" v-if="isLoading" type="heading" />
+			<h1 class="project-section__heading" v-else>{{ projectData?.name }}</h1>
 
 			<div class="project-section__tags-wrapper">
-				<ul class="project-section__tags-list">
+				<v-skeleton-loader
+					class="project-section__tag-key"
+					v-if="isLoading"
+					type="chip@4"
+				/>
+
+				<ul class="project-section__tags-list" v-else>
 					<li
 						class="project-section__tag-item"
 						v-for="([tagKey, tagValue], idx) in sortedTags"
@@ -18,15 +25,27 @@
 				</ul>
 			</div>
 
+			<v-skeleton-loader
+				class="project-section__description"
+				v-if="isLoading"
+				type="text@10"
+			/>
 			<div
 				class="project-section__description"
+				v-else
 				v-html="renderMarkdown(projectData?.description || '')"
 			></div>
 		</div>
 
 		<div class="project-section__gallery">
+			<div class="container container--mobile-extended" v-if="isLoading">
+				<v-skeleton-loader
+					type="image"
+				/>
+			</div>
+
 			<ABGallery
-				v-if="projectData"
+				v-else-if="projectData"
 				:images="projectData?.images"
 				:projectName="projectData?.name"
 			/>
@@ -155,6 +174,13 @@ export default defineComponent({
 	line-height: 57px
 	margin: 0 auto 24px
 
+	@include screen(sm)
+		font-size: 32px
+		line-height: normal
+		text-align: left
+		margin: 0 auto 10px
+
+
 .project-section__tags-wrapper
 	max-width: 600px
 	margin: 0 auto 16px
@@ -167,9 +193,16 @@ export default defineComponent({
 	margin: 0
 	padding: 0
 
+	@include screen(sm)
+		gap: 8px
+
 .project-section__tag-item
 	margin: 0
 	padding: 0
+
+	@include screen(sm)
+		font-size: 14px
+		line-height: normal
 
 .project-section__tag-key
 	text-transform: capitalize
@@ -177,13 +210,27 @@ export default defineComponent({
 .project-section__description
 	max-width: 600px
 	text-align: left
-	margin: 0 auto 40px
+	margin: 0 auto 20px
 
 	p
 		font-weight: 300
 		font-size: 18px
 		line-height: 27px
-		margin-bottom: 16px
+
+		&:not(:last-child)
+			margin-bottom: 16px
+
+	@include screen(sm)
+		margin: 0 auto 0
+
+		p
+			font-weight: 300
+			font-size: 16px
+			font-size: min(5vw, 18px)
+			line-height: 1.5em
+
+			&:not(:last-child)
+				margin-bottom: 10px
 
 .project-section__link
 	display: flex
@@ -191,4 +238,6 @@ export default defineComponent({
 	margin: 0 auto
 	padding: 15px
 
+	@include screen(sm)
+		padding: 0
 </style>

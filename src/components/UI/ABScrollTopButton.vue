@@ -86,5 +86,5 @@ export default defineComponent({
 		bottom: 30px
 
 	&--hidden
-		right: calc( 0% - 45px )
+		right: calc( 0% - 45px * 1.5 )
 </style>
