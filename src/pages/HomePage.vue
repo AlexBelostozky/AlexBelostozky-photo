@@ -3,52 +3,44 @@
 		<div class="container" id="about">
 			<div class="about-section__grid">
 				<div class="about-section__portrait">
-					<picture>
-						<source media="(max-width: 768px)" srcset="@images/content/portrait-mobile.webp" type="image/webp">
-						<source media="(max-width: 768px)" srcset="@images/content/portrait-mobile.jpg" type="image/jpeg">
+					<v-skeleton-loader
+						v-if="!isPortraitLoaded"
+						type="image"
+					/>
 
-						<source srcset="@images/content/portrait.webp" type="image/webp">
+					<picture v-show="isPortraitLoaded">
+						<source media="(max-width: 768px)" :srcset="mainData?.portrait.mobile_webp" type="image/webp">
+						<source media="(max-width: 768px)" :srcset="mainData?.portrait.mobile" type="image/jpeg">
+
+						<source :srcset="mainData?.portrait.desktop_webp" type="image/webp">
 						<img
-							src="@images/content/portrait.jpg"
+							:src="mainData?.portrait.desktop"
 							width="248"
 							height="248"
 							alt="Александр Белостоцкий"
+							@load="handleLoadPortrait"
 						>
 					</picture>
 				</div>
 
-				<h1 class="about-section__story-heading">Искусство<br> во&nbsp;всём</h1>
+				<v-skeleton-loader
+					class="about-section__story-heading"
+					v-if="isLoadingMainData"
+					type="heading"
+					color="transparent"
+				/>
+				<h1 class="about-section__story-heading" v-else>{{ mainData?.heading }}</h1>
 
-				<div class="about-section__story-text-wrapper">
-					<p class="about-section__story-text">
-						Ну&nbsp;или&nbsp;почти во&nbsp;всём 😀
-					</p>
-
-					<p class="about-section__story-text">
-						Так уж&nbsp;сложилось, что&nbsp;подавляющая часть того,
-						что&nbsp;мы&nbsp;видим каждый день, можем потрогать, используем
-						в&nbsp;своей повседневной жизни создано людьми. Но&nbsp;с&nbsp;какого-то
-						момента я&nbsp;начал воспринимать некоторые вещи как&nbsp;объекты
-						искусства. И&nbsp;убеждён, что&nbsp;в&nbsp;любой вещи можно
-						его&nbsp;найти. Ведь каждая вещь так&nbsp;или&nbsp;иначе характеризует
-						мир, в&nbsp;котором мы&nbsp;живём, является срезом культуры того времени,
-						когда она &nbsp;была создана. И&nbsp;это&nbsp;отчасти является причиной
-						основной тематики моих фотографий.
-					</p>
-
-					<p class="about-section__story-text">
-						Автомобили, особенно которые
-
-						<a
-							href="https://www.instagram.com/explore/tags/такихуженеделают/"
-							target="_blank"
-						>#ТакихУжеНеДелают</a>,
-
-						являются результатом творчества огромного числа инженеров, дизайнеров
-						и&nbsp;учёных. Именно поэтому я&nbsp;чувствую огромное желание запечатлеть
-						эти&nbsp;образцы культуры и&nbsp;показать их&nbsp;вам.
-					</p>
-				</div>
+				<v-skeleton-loader
+					class="about-section__story-text-wrapper"
+					v-if="isLoadingMainData"
+					type="text@15"
+					color="transparent"
+				/>
+				<div
+					class="about-section__story-text-wrapper"
+					v-html="renderMarkdown(mainData?.description || '')"
+				></div>
 			</div>
 		</div>
 	</section>
@@ -56,13 +48,13 @@
 	<section class="recent-section" id="works">
 		<div class="container">
 			<ul class="recent-section__list">
-				<template v-if="isLoading">
-						<ABProjectItemLoader
-							v-for="idx in projectsToShow"
-							:key="idx"
-							:loading="isLoading"
-						/>
-					</template>
+				<template v-if="isLoadingProjects">
+					<ABProjectItemLoader
+						v-for="idx in projectsToShow"
+						:key="idx"
+						:loading="isLoadingProjects"
+					/>
+				</template>
 
 				<ABProjectItem
 					v-for="project in recentProjects"
@@ -83,23 +75,24 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { getProjects } from '@/api';
+import { getMainPageData, getProjects } from '@/api';
+import { MainPageData } from '@/types/main';
 import { ProjectType } from '@/types/project';
+import { renderMarkdown } from '@/utils';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
 
 interface HomePageData {
-	isLoading: boolean,
+	isLoadingMainData: boolean,
+	isLoadingProjects: boolean,
+	isPortraitLoaded: boolean,
 	projectsToShow: number,
+	mainData: MainPageData | null,
 	projects: Array<ProjectType>,
 }
 
 export default defineComponent({
 	name: 'HomePage',
-
-	props: {
-
-	},
 
 	components: {
 		ABProjectItem,
@@ -108,8 +101,12 @@ export default defineComponent({
 
 	data(): HomePageData {
 		return {
-			isLoading: true,
+			isLoadingMainData: true,
+			isLoadingProjects: true,
+			isPortraitLoaded: false,
 			projectsToShow: 6,
+
+			mainData: null,
 
 			projects: [
 				// {
@@ -147,9 +144,24 @@ export default defineComponent({
 	},
 
 	methods: {
+		handleLoadPortrait () {
+			this.isPortraitLoaded = true;
+		},
+
+		async showMainPageData () {
+			try {
+				this.isLoadingMainData = true;
+				this.mainData = await getMainPageData('main');
+			} catch (error) {
+				console.warn('Failed to show main: ', error);
+			} finally {
+				this.isLoadingMainData = false;
+			}
+		},
+
 		async showProjects () {
 			try {
-				this.isLoading = true;
+				this.isLoadingProjects = true;
 
 				const {
 					fetchedProjects
@@ -159,12 +171,15 @@ export default defineComponent({
 			} catch (error){
 				console.warn('Failed to show projects: ', error);
 			} finally {
-				this.isLoading = false;
+				this.isLoadingProjects = false;
 			}
 		},
+
+		renderMarkdown,
 	},
 
 	beforeMount() {
+		this.showMainPageData();
 		this.showProjects();
 	},
 
@@ -213,20 +228,31 @@ export default defineComponent({
 		grid-template-columns:  95px 1fr
 
 .about-section__portrait
+	position: relative
 	grid-area: portrait
 	justify-self: end
+	width: 100%
+	padding-top: 100%
+	height: fit-content
 
 	picture
 		display: block
 		line-height: 0
 
-	img
+	img,
+	.v-skeleton-loader
+		position: absolute
+		top: 0
+		left: 0
 		width: 100%
-		height: auto
+		height: 100%
 		@include gradient-border-radius
 
 		@include screen(sm)
 			width: 95px
+
+	.v-skeleton-loader__bone
+		height: 100%
 
 .about-section__story-heading
 	grid-area: heading
@@ -256,31 +282,31 @@ export default defineComponent({
 .about-section__story-text-wrapper
 	grid-area: story
 
-.about-section__story-text
-	font-family: $font-sf
-	font-weight: 400
-	font-size: 18px
-	line-height: 27px
-	letter-spacing: -0.03em
-	text-align: left
-	color: $white
-	margin: 0
-
-	&:not(:last-child)
-		margin-bottom: 16px
-
-	a
-		color: $orange
-
-		&:visited
-			color: $orange
-
-	@include screen(sm)
-		font-size: 14px
-		line-height: 24px
+	p
+		font-family: $font-sf
+		font-weight: 400
+		font-size: 18px
+		line-height: 27px
+		letter-spacing: -0.03em
+		text-align: left
+		color: $white
+		margin: 0
 
 		&:not(:last-child)
-			margin-bottom: 8px
+			margin-bottom: 16px
+
+		a
+			color: $orange
+
+			&:visited
+				color: $orange
+
+		@include screen(sm)
+			font-size: 14px
+			line-height: 24px
+
+			&:not(:last-child)
+				margin-bottom: 8px
 
 .recent-section
 	padding: 50px 0

@@ -12,8 +12,26 @@ import {
 
 import { Collection } from "@/types/database"
 import { ProjectType } from "@/types/project";
+import { MainPageData } from "@/types/main";
 import { getImageUrl } from '@/utils';
 
+
+export const getMainPageData = async (collectionName: Collection) => {
+	const mainRef = collection(db, collectionName);
+	const mainQuery = query(mainRef);
+	const snapshot = await getDocs(mainQuery);
+	const fetchedData = snapshot.docs[0].data() as MainPageData;
+
+	return {
+		...fetchedData,
+		portrait: {
+			desktop: getImageUrl(fetchedData.portrait.desktop),
+			desktop_webp: getImageUrl(fetchedData.portrait.desktop_webp),
+			mobile: getImageUrl(fetchedData.portrait.mobile),
+			mobile_webp: getImageUrl(fetchedData.portrait.mobile_webp),
+		},
+	};
+}
 
 export const getProjects = async (
 	collectionName: Collection,
@@ -22,7 +40,7 @@ export const getProjects = async (
 ) => {
 	const projectsRef = collection(db, collectionName);
 	const projectsQuery = lastProject
-		? query(projectsRef, limit(projectsAmount), lastProject && startAfter(lastProject))
+		? query(projectsRef, limit(projectsAmount), startAfter(lastProject))
 		: query(projectsRef, limit(projectsAmount));
 
 	const snapshot = await getDocs(projectsQuery);
