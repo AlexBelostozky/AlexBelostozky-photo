@@ -29,7 +29,11 @@
 					type="heading"
 					color="transparent"
 				/>
-				<h1 class="about-section__story-heading" v-else>{{ mainData?.heading }}</h1>
+				<h1
+					class="about-section__story-heading"
+					v-else
+					v-html="prettifyText(mainData?.heading || '')"
+				></h1>
 
 				<v-skeleton-loader
 					class="about-section__story-text-wrapper"
@@ -78,7 +82,7 @@ import { defineComponent } from 'vue';
 import { getMainPageData, getProjects } from '@/api';
 import { MainPageData } from '@/types/main';
 import { ProjectType } from '@/types/project';
-import { renderMarkdown } from '@/utils';
+import { renderMarkdown, prettifyText } from '@/utils';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
 
@@ -176,6 +180,7 @@ export default defineComponent({
 		},
 
 		renderMarkdown,
+		prettifyText,
 	},
 
 	beforeMount() {
@@ -248,11 +253,17 @@ export default defineComponent({
 		height: 100%
 		@include gradient-border-radius
 
-		@include screen(sm)
-			width: 95px
-
 	.v-skeleton-loader__bone
 		height: 100%
+
+	@include screen(sm)
+		width: 95px
+		height: 95px
+		padding-top: 0
+
+		img,
+		.v-skeleton-loader
+			width: 95px
 
 .about-section__story-heading
 	grid-area: heading
@@ -264,17 +275,11 @@ export default defineComponent({
 	color: $white
 	margin: 0 0 24px
 
-	br
-		display: none
-
 	@include screen(sm)
 		align-self: center
 		font-size: 24px
 		line-height: normal
 		margin: 0
-
-		br
-			display: inline
 
 	@include screen(xs)
 		align-self: end

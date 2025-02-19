@@ -14,31 +14,34 @@ const md = new MarkdownIt({linkify: true}).use(markdownItLinkAttributes, {
 });
 
 export const renderMarkdown = (text: string) => {
-	// Doesn't work on old browsers...
-	// md.render(text
-	// 	.replace(/\\n/g, '\n')
-	// 	.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
-	// )
 	try {
 		const processedText = text.replace(/\\n/g, '\n');
-		let newResult = processedText;
-
-		// eslint-disable-next-line no-constant-condition
-		while (true) {
-			const replaced = newResult.replace(/((?:^|;|\s))([\p{L}\d]{1,4})(,?)\s/gu, '$1$2$3&nbsp;');
-
-			if (replaced === newResult) {
-				break;
-			}
-
-			newResult = replaced;
-		}
-
-		return md.render(newResult || text);
+		const prettifiedText = prettifyText(processedText);
+		return md.render(prettifiedText || text);
 	} catch (error) {
 		console.warn('Failed to render markdown: ', error);
-
 		return text;
+	}
+};
+
+export const prettifyText = (text: string) => {
+	let result = text;
+
+	try {
+		// eslint-disable-next-line no-constant-condition
+		while (true) {
+			// Doesn't work on old browsers...
+			// 	.replace(/(?<=^|\s)(\p{L}{1,4})(,?)\s/gu, '$1$2&nbsp;') || ''
+			const replaced = result.replace(/((?:^|;|\s))([\p{L}\d]{1,4})(,?)\s/gu, '$1$2$3&nbsp;');
+			if (replaced === result) {
+				break;
+			}
+			result = replaced;
+		}
+		return result
+	} catch (error) {
+		console.warn('Failed to prettify text: ', error);
+		return result
 	}
 };
 
