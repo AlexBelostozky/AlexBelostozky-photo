@@ -2,12 +2,21 @@
 	<li class="recent-section__item">
 		<router-link class="project-item__link" :to="projectUrl">
 			<div class="project-item__image-wrapper">
+				<v-skeleton-loader
+					class="project-item__image"
+					v-if="!isLoaded"
+					type="image"
+				/>
+
 				<img
+					v-show="isLoaded"
 					class="project-item__image"
 					:src="projectCoverUrl"
 					width="320"
 					height="320"
 					:alt="`Проект ${ projectName }`"
+					@load="handleLoad"
+					@error="handleError"
 				>
 			</div>
 
@@ -16,8 +25,11 @@
 	</li>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, PropType, ref } from 'vue';
+import { RouteLocationRaw } from 'vue-router';
+
+export default defineComponent({
 	name: 'ABProjectItem',
 
 	props: {
@@ -26,15 +38,35 @@ export default {
 			default: 'Проект без названия 🤔'
 		},
 		projectUrl: {
-			type: String,
+			type: [String, Object] as PropType<string | RouteLocationRaw>,
 			default: '/404'
 		},
 		projectCoverUrl: {
 			type: String,
 			default: '@images/blank-cover.jpg'
 		}
-	}
-}
+	},
+
+	setup() {
+		const isLoaded = ref(false);
+
+		const handleLoad = () => {
+			isLoaded.value = true;
+		};
+
+		const handleError = () => {
+			isLoaded.value = true;
+
+			console.warn('Faialed to load image')
+		};
+
+		return {
+			isLoaded,
+			handleLoad,
+			handleError,
+		}
+	},
+})
 </script>
 
 <style lang="sass">
@@ -66,6 +98,9 @@ export default {
 	width: 100%
 	padding-top: 100%
 	transition: all .2s ease-in-out
+
+	.v-skeleton-loader
+		position: absolute
 
 .project-item__image
 	position: absolute

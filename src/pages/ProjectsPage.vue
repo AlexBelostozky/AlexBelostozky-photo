@@ -23,7 +23,7 @@
 								v-for="project in showingProjects"
 								:key="project.slug"
 								:projectName="project.name"
-								:projectUrl="`/project/${ project.slug }`"
+								:projectUrl="{ name: 'Project', params: { projectSlug: project.slug } }"
 								:projectCoverUrl="project.cover_url"
 							/>
 						</template>
@@ -88,40 +88,7 @@ export default defineComponent({
 			projectsPerPage: 6,
 			lastVisible: null,
 			isLoading: true,
-			cachedProjects: {
-				// 1: [
-				// 	{
-				// 		'name': 'Celsior',
-				// 		'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
-				// 		'url': '/celsior'
-				// 	},
-				// 	{
-				// 		'name': 'Laurel',
-				// 		'coverUrl': require('@images/content/projects/laurel/laurel-cover.jpg'),
-				// 		'url': '/laurel'
-				// 	},
-				// 	{
-				// 		'name': 'Mark II',
-				// 		'coverUrl': require('@images/content/projects/mark/mark-cover.jpg'),
-				// 		'url': '/mark'
-				// 	},
-				// 	{
-				// 		'name': 'Museum',
-				// 		'coverUrl': require('@images/content/projects/museum/museum-cover.jpg'),
-				// 		'url': '/museum'
-				// 	},
-				// 	{
-				// 		'name': '2104',
-				// 		'coverUrl': require('@images/content/projects/2104/2104-cover.jpg'),
-				// 		'url': '/2104'
-				// 	},
-				// 	{
-				// 		'name': 'Cresta',
-				// 		'coverUrl': require('@images/content/projects/cresta/cresta-cover.jpg'),
-				// 		'url': '/cresta'
-				// 	},
-				// ]
-			},
+			cachedProjects: {},
 			showingProjects: [],
 			totalProjects: 0,
 		}
