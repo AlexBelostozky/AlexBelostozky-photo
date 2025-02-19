@@ -22,7 +22,7 @@ export const getProjects = async (
 ) => {
 	const projectsRef = collection(db, collectionName);
 	const projectsQuery = lastProject
-		? query(projectsRef, limit(projectsAmount), startAfter(lastProject))
+		? query(projectsRef, limit(projectsAmount), lastProject && startAfter(lastProject))
 		: query(projectsRef, limit(projectsAmount));
 
 	const snapshot = await getDocs(projectsQuery);

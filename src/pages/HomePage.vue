@@ -56,12 +56,20 @@
 	<section class="recent-section" id="works">
 		<div class="container">
 			<ul class="recent-section__list">
+				<template v-if="isLoading">
+						<ABProjectItemLoader
+							v-for="idx in projectsToShow"
+							:key="idx"
+							:loading="isLoading"
+						/>
+					</template>
+
 				<ABProjectItem
 					v-for="project in recentProjects"
-					:key="project.url"
+					:key="project.slug"
 					:projectName="project.name"
-					:projectUrl="project.url"
-					:projectCoverUrl="project.coverUrl"
+					:projectUrl="{ name: 'Project', params: {projectSlug: project.slug} }"
+					:projectCoverUrl="project.cover_url"
 				/>
 			</ul>
 
@@ -75,7 +83,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { getProjects } from '@/api';
+import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
+import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
+
+interface HomePageData {
+	isLoading: boolean,
+	projectsToShow: number,
+	projects: Array<ProjectType>,
+}
 
 export default defineComponent({
 	name: 'HomePage',
@@ -86,56 +103,74 @@ export default defineComponent({
 
 	components: {
 		ABProjectItem,
+		ABProjectItemLoader
 	},
 
-	data: () => {
+	data(): HomePageData {
 		return {
+			isLoading: true,
+			projectsToShow: 6,
+
 			projects: [
-				{
-					'name': 'Celsior',
-					'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
-					'url': '/celsior'
-				},
-				{
-					'name': 'Laurel',
-					'coverUrl': require('@images/content/projects/laurel/laurel-cover.jpg'),
-					'url': '/laurel'
-				},
-				{
-					'name': 'Mark II',
-					'coverUrl': require('@images/content/projects/mark/mark-cover.jpg'),
-					'url': '/mark'
-				},
-				{
-					'name': 'Museum',
-					'coverUrl': require('@images/content/projects/museum/museum-cover.jpg'),
-					'url': '/museum'
-				},
-				{
-					'name': '2104',
-					'coverUrl': require('@images/content/projects/2104/2104-cover.jpg'),
-					'url': '/2104'
-				},
-				{
-					'name': 'Cresta',
-					'coverUrl': require('@images/content/projects/cresta/cresta-cover.jpg'),
-					'url': '/cresta'
-				},
+				// {
+				// 	'name': 'Celsior',
+				// 	'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
+				// 	'url': '/celsior'
+				// },
+				// {
+				// 	'name': 'Laurel',
+				// 	'coverUrl': require('@images/content/projects/laurel/laurel-cover.jpg'),
+				// 	'url': '/laurel'
+				// },
+				// {
+				// 	'name': 'Mark II',
+				// 	'coverUrl': require('@images/content/projects/mark/mark-cover.jpg'),
+				// 	'url': '/mark'
+				// },
+				// {
+				// 	'name': 'Museum',
+				// 	'coverUrl': require('@images/content/projects/museum/museum-cover.jpg'),
+				// 	'url': '/museum'
+				// },
+				// {
+				// 	'name': '2104',
+				// 	'coverUrl': require('@images/content/projects/2104/2104-cover.jpg'),
+				// 	'url': '/2104'
+				// },
+				// {
+				// 	'name': 'Cresta',
+				// 	'coverUrl': require('@images/content/projects/cresta/cresta-cover.jpg'),
+				// 	'url': '/cresta'
+				// },
 			]
 		}
 	},
 
 	methods: {
-		async getProjects (page: number, limit: number) {
-			const response = await fetch(`https://api.com/projects?page=${page}&limit=${limit}`);
-			const data = await response.json();
-			this.projects.push(data);
+		async showProjects () {
+			try {
+				this.isLoading = true;
+
+				const {
+					fetchedProjects
+				} = await getProjects('projects', this.projectsToShow + 1);
+
+				this.projects = fetchedProjects;
+			} catch (error){
+				console.warn('Failed to show projects: ', error);
+			} finally {
+				this.isLoading = false;
+			}
 		},
 	},
 
+	beforeMount() {
+		this.showProjects();
+	},
+
 	computed: {
-		recentProjects() {
-			return this.projects.slice(0, 6);
+		recentProjects(): Array<ProjectType>  {
+			return this.projects.slice(0, this.projectsToShow);
 		},
 	}
 })
