@@ -3,7 +3,12 @@
 		<div class="container" id="about">
 			<div class="about-section__grid">
 				<div class="about-section__portrait">
-					<picture>
+					<v-skeleton-loader
+						v-if="!isPortraitLoaded"
+						type="image"
+					/>
+
+					<picture v-show="isPortraitLoaded">
 						<source media="(max-width: 768px)" :srcset="mainData?.portrait.mobile_webp" type="image/webp">
 						<source media="(max-width: 768px)" :srcset="mainData?.portrait.mobile" type="image/jpeg">
 
@@ -13,12 +18,25 @@
 							width="248"
 							height="248"
 							alt="Александр Белостоцкий"
+							@load="handleLoadPortrait"
 						>
 					</picture>
 				</div>
 
-				<h1 class="about-section__story-heading">{{ mainData?.heading }}</h1>
+				<v-skeleton-loader
+					class="about-section__story-heading"
+					v-if="isLoadingMainData"
+					type="heading"
+					color="transparent"
+				/>
+				<h1 class="about-section__story-heading" v-else>{{ mainData?.heading }}</h1>
 
+				<v-skeleton-loader
+					class="about-section__story-text-wrapper"
+					v-if="isLoadingMainData"
+					type="text@15"
+					color="transparent"
+				/>
 				<div
 					class="about-section__story-text-wrapper"
 					v-html="renderMarkdown(mainData?.description || '')"
@@ -67,6 +85,7 @@ import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
 interface HomePageData {
 	isLoadingMainData: boolean,
 	isLoadingProjects: boolean,
+	isPortraitLoaded: boolean,
 	projectsToShow: number,
 	mainData: MainPageData | null,
 	projects: Array<ProjectType>,
@@ -84,6 +103,7 @@ export default defineComponent({
 		return {
 			isLoadingMainData: true,
 			isLoadingProjects: true,
+			isPortraitLoaded: false,
 			projectsToShow: 6,
 
 			mainData: null,
@@ -124,6 +144,10 @@ export default defineComponent({
 	},
 
 	methods: {
+		handleLoadPortrait () {
+			this.isPortraitLoaded = true;
+		},
+
 		async showMainPageData () {
 			try {
 				this.isLoadingMainData = true;
@@ -204,20 +228,31 @@ export default defineComponent({
 		grid-template-columns:  95px 1fr
 
 .about-section__portrait
+	position: relative
 	grid-area: portrait
 	justify-self: end
+	width: 100%
+	padding-top: 100%
+	height: fit-content
 
 	picture
 		display: block
 		line-height: 0
 
-	img
+	img,
+	.v-skeleton-loader
+		position: absolute
+		top: 0
+		left: 0
 		width: 100%
-		height: auto
+		height: 100%
 		@include gradient-border-radius
 
 		@include screen(sm)
 			width: 95px
+
+	.v-skeleton-loader__bone
+		height: 100%
 
 .about-section__story-heading
 	grid-area: heading
