@@ -1,7 +1,8 @@
 import { Context } from "telegraf";
 
 export interface SessionData {
-	courseLike: boolean;
+	waitingForHeading: boolean;
+	editingDocId: string | null;
 }
 
 export interface IBotContext extends Context {

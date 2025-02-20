@@ -9,26 +9,16 @@ export class StartCommand extends Command {
 
 	handle(): void {
 		this.bot.start((ctx) => {
-			console.log(ctx.session);
+			console.log('Bot started!');
 
 			ctx.reply(
-				"Hi! Let's administrate web-page!/n/nSelect what you want to do",
+				"Hi! Let's administrate web-page!\n\nSelect what you want to do",
 				Markup.inlineKeyboard([
-					Markup.button.callback("Add project", "add_project"),
-					Markup.button.callback("Edit project", "edit_project"),
-					Markup.button.callback("Edit main", "edit_main"),
+					[Markup.button.callback("Add project", "add_project")],
+					[Markup.button.callback("Edit project", "edit_project")],
+					[Markup.button.callback("Edit main", "edit_main")],
 				])
 			);
-		});
-
-		this.bot.action("course_like", (ctx)=>{
-			ctx.session.courseLike = true;
-			ctx.editMessageText("ОК!");
-		});
-
-		this.bot.action("course_dislike", (ctx)=>{
-			ctx.session.courseLike = false;
-			ctx.editMessageText("Жаль...");
 		});
 	}
 }
