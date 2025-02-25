@@ -51,28 +51,36 @@
 
 	<section class="recent-section" id="works">
 		<div class="container">
-			<ul class="recent-section__list">
-				<template v-if="isLoadingProjects">
-					<ABProjectItemLoader
-						v-for="idx in projectsToShow"
-						:key="idx"
-						:loading="isLoadingProjects"
+			<div class="recent-section__wrapper">
+				<ul class="recent-section__list">
+					<template v-if="isLoadingProjects">
+						<ABProjectItemLoader
+							v-for="idx in projectsToShow"
+							:key="idx"
+							:loading="isLoadingProjects"
+						/>
+					</template>
+
+					<ABProjectItem
+						v-for="project in recentProjects"
+						:key="project.slug"
+						:projectName="project.name"
+						:projectUrl="{ name: 'Project', params: {projectSlug: project.slug} }"
+						:projectCoverUrl="project.cover_url"
 					/>
-				</template>
+				</ul>
 
-				<ABProjectItem
-					v-for="project in recentProjects"
-					:key="project.slug"
-					:projectName="project.name"
-					:projectUrl="{ name: 'Project', params: {projectSlug: project.slug} }"
-					:projectCoverUrl="project.cover_url"
-				/>
-			</ul>
-
-			<router-link
-				v-if="projects.length > 6"
-				:to="{name: 'Projects'}"
-			>Все проекты</router-link>
+				<router-link
+					class="recent-section__link"
+					v-if="projects.length > projectsToShow"
+					:to="{name: 'Projects'}"
+				>
+					Все&nbsp;проекты
+					<v-icon
+						icon="mdil-chevron-right"
+					></v-icon>
+				</router-link>
+			</div>
 		</div>
 	</section>
 </template>
@@ -283,6 +291,11 @@ export default defineComponent({
 .recent-section
 	padding: 50px 0
 
+.recent-section__wrapper
+	display: flex
+	flex-direction: column
+	gap: 32px
+
 .recent-section__list
 	display: grid
 	grid-template-columns:  1fr 1fr 1fr
@@ -297,4 +310,15 @@ export default defineComponent({
 
 	@include screen(xs)
 		grid-template-columns:  1fr
+
+.recent-section__link
+	display: flex
+	width: fit-content
+	font-size: 18px
+	line-height: 27px
+	margin: 0 auto
+	padding: 15px
+
+	@include screen(sm)
+		padding: 0
 </style>

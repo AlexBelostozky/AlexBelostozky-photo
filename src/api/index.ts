@@ -7,7 +7,10 @@ import {
 	startAfter,
 	where,
 	QueryDocumentSnapshot,
-	DocumentData
+	DocumentData,
+	getCountFromServer,
+	startAt,
+	orderBy
 } from 'firebase/firestore';
 
 import { Collection } from "@/types/database"
@@ -36,14 +39,36 @@ export const getMainPageData = async (collectionName: Collection) => {
 export const getProjects = async (
 	collectionName: Collection,
 	projectsAmount: number,
-	lastProject?: QueryDocumentSnapshot<DocumentData, DocumentData> | null,
+	offset: number = 0
 ) => {
 	const projectsRef = collection(db, collectionName);
-	const projectsQuery = lastProject
-		? query(projectsRef, limit(projectsAmount), startAfter(lastProject))
+	// const projectsQuery = lastProject
+	// 	? query(projectsRef, limit(projectsAmount), startAfter(lastProject))
+	// 	: query(projectsRef, limit(projectsAmount));
+
+	let startAtDoc: QueryDocumentSnapshot<DocumentData> | null = null;
+
+	console.log(offset);
+	if (offset > 0) {
+		const offsetQuery = query(
+			projectsRef,
+			limit(projectsAmount)
+		);
+
+		const offsetSnapshot = await getDocs(offsetQuery);
+		startAtDoc = offsetSnapshot.docs[offset - 1] || null;
+	}
+
+	const projectsQuery = startAtDoc
+		? query(projectsRef, startAfter(startAtDoc), limit(projectsAmount))
 		: query(projectsRef, limit(projectsAmount));
 
 	const snapshot = await getDocs(projectsQuery);
+
+
+	const totalSnapshot = await getCountFromServer(projectsRef);
+
+	const totalProjects = totalSnapshot.data().count;
 
 	const fetchedProjects = snapshot.docs.map(doc => {
 		const projectData = doc.data() as ProjectType;
@@ -58,7 +83,7 @@ export const getProjects = async (
 		? snapshot.docs[snapshot.docs.length - 1]
 		: null;
 
-	return { lastFromSnapshot, fetchedProjects }
+	return { lastFromSnapshot, fetchedProjects, totalProjects }
 }
 
 export const getProject = async (

@@ -56,7 +56,6 @@ import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
 import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
-
 import { getProjects } from '@/api';
 
 
@@ -97,27 +96,37 @@ export default defineComponent({
 	methods: {
 		async showProjects(page: number, projectsPerPage: number) {
 			if (this.cachedProjects[page]) {
+				console.log('try show cached');
+
+				console.log(this.cachedProjects);
+
 				this.showingProjects = this.cachedProjects[page];
 				this.isLoading = false;
 				return;
 			}
 
 			try {
+				console.log('try load new with page: ', this.page);
+
 				this.isLoading = true;
+
+				const offset = (page - 1) * projectsPerPage;
 
 				const {
 					lastFromSnapshot,
-					fetchedProjects
-				} = await getProjects('projects', projectsPerPage, this.lastVisible);
+					fetchedProjects,
+					totalProjects
+				} = await getProjects('projects', projectsPerPage, offset);
 
 				this.lastVisible = lastFromSnapshot;
+				this.totalProjects = totalProjects;
 
-				fetchedProjects.forEach(project => {
-					if (!this.cachedProjects[page]) {
-						this.cachedProjects[page] = [];
-					}
-					this.cachedProjects[page].push(project);
-				});
+				// fetchedProjects.forEach(project => {
+				// 	if (!this.cachedProjects[page]) {
+				// 		this.cachedProjects[page] = [];
+				// 		this.cachedProjects[page].push(project);
+				// 	}
+				// });
 
 				this.showingProjects = fetchedProjects;
 			} catch (error) {
@@ -125,6 +134,13 @@ export default defineComponent({
 			} finally {
 				this.isLoading = false;
 			}
+		}
+	},
+
+	beforeMount() {
+		const pageFromURL = Number(this.$route.query.page);
+		if (!isNaN(pageFromURL) && pageFromURL > 0) {
+			this.page = pageFromURL;
 		}
 	},
 
@@ -143,6 +159,8 @@ export default defineComponent({
 	watch: {
 		page(value) {
 			this.showProjects(value, this.projectsPerPage);
+
+			this.$router.push({ query: { ...this.$route.query, page: value } });
 		}
 	},
 })
