@@ -1,79 +1,102 @@
-import { Markup, Telegraf } from "telegraf";
+import { Scenes, Telegraf, Markup } from "telegraf";
 import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
 import { MainPageData } from "../types/main";
-import * as admin from "firebase-admin";
-import { ConfigService } from "../config/config.service";
+import { FirestoreService } from "../services/firestore.service";
+
+// Создаем сцену для редактирования
+const editFieldScene = new Scenes.WizardScene<IBotContext>(
+    "EDIT_FIELD_SCENE",
+    async (ctx) => {
+        await ctx.reply("Пожалуйста, введите новое значение:");
+        return ctx.wizard.next();
+    },
+    async (ctx) => {
+        // Проверяем, что ctx.message существует и это текстовое сообщение
+        if (!ctx.message || !("text" in ctx.message)) {
+            await ctx.reply("❌ Пожалуйста, отправьте текстовое сообщение.");
+            return ctx.scene.reenter(); // Повторяем сцену
+        }
+
+        const newValue = ctx.message.text;
+        const { collectionName, field, successMessage } = ctx.wizard.state;
+
+		console.log("Updating field:", { collectionName, field, newValue });
+
+        try {
+            const docId = await ctx.firestoreService.getFirstDocId(collectionName);
+            await ctx.firestoreService.updateDocumentField(collectionName, docId, field, newValue);
+            await ctx.reply(`✅ ${successMessage}`);
+        } catch (error) {
+            console.error("Firebase error:", error);
+            await ctx.reply(`❌ Ошибка при обновлении ${field}`);
+        }
+
+        return ctx.scene.leave();
+    }
+);
 
 export class EditMainCommand extends Command {
-	private db: FirebaseFirestore.Firestore;
+    private firestoreService: FirestoreService;
 
-	constructor(bot: Telegraf<IBotContext>) {
-		super(bot);
+    constructor(bot: Telegraf<IBotContext>) {
+        super(bot);
+        this.firestoreService = new FirestoreService();
 
-		const configService = new ConfigService();
-		this.db = configService.getFirestoreAdmin();
-	}
+        // Передаем firestoreService в контекст
+        bot.use((ctx, next) => {
+            ctx.firestoreService = this.firestoreService;
+            return next();
+        });
 
-	handle(): void {
-		this.bot.action("edit_main", async (ctx) => {
-			try {
-				const mainCollection = this.db.collection("main");
-				const snapshot = await mainCollection.get();
+        // Регистрируем сцену
+        const stage = new Scenes.Stage<IBotContext>([editFieldScene]);
+        bot.use(stage.middleware()); // Добавляем Stage в бота
+    }
 
-				if (snapshot.empty) {
-					await ctx.reply("❌ Данные отсутствуют");
-					return;
-				}
+    handle(): void {
+        this.bot.action("edit_main", async (ctx) => {
+            try {
+                const mainData = (await ctx.firestoreService.getCollectionData("main"))[0] as MainPageData;
 
-				const mainData = snapshot.docs[0].data() as MainPageData;
+                await ctx.replyWithHTML(
+                    `<b>Current main data:</b>\n\n` +
+                        `<b>Heading</b>: ${mainData.heading}\n\n` +
+                        `<b>Description</b>: ${mainData.description}\n\n` +
+                        `<b>Portrait</b>:\n
+                        [Desktop](${mainData.portrait.desktop})\n
+                        [Mobile](${mainData.portrait.mobile})
+                    `,
+                    Markup.inlineKeyboard([
+                        [Markup.button.callback("Edit heading", "edit_heading")],
+                        [Markup.button.callback("Edit description", "edit_description")],
+                    ])
+                );
+            } catch (error) {
+                console.error("Firebase error:", error);
+                ctx.reply("❌ Ошибка при загрузке данных");
+            }
+        });
 
-				await ctx.replyWithHTML(
-					`<b>Current main data:</b>\n\n` +
-						`<b>Heading</b>: ${mainData.heading}\n\n` +
-						`<b>Description</b>: ${mainData.description}\n\n` +
-						`<b>Portrait</b>:\n
-						[Desktop](${mainData.portrait.desktop})\n
-						[Mobile](${mainData.portrait.mobile})
-					`,
-					Markup.inlineKeyboard([
-						[Markup.button.callback("Edit heading", "edit_heading")],
-						[Markup.button.callback("Edit description", "edit_description")],
-					])
-				);
-			} catch (error) {
-				console.error("Firebase error:", error);
-				ctx.reply("❌ Ошибка при загрузке данных");
-			}
-		});
+        this.bot.action("edit_heading", async (ctx) => {
+			await ctx.scene.enter("EDIT_FIELD_SCENE"); // Входим в сцену
 
-		this.bot.action("edit_heading", async (ctx) => {
-			await ctx.reply("Пожалуйста, введите новый заголовок:");
+            ctx.wizard.state = {
+                collectionName: "main",
+                field: "heading",
+                successMessage: "Заголовок успешно обновлен!",
+            };
 
-			this.bot.on("text", async (ctx) => {
-				const newHeading = ctx.message.text;
+        });
 
-				try {
-					const mainCollection = this.db.collection("main");
-					const snapshot = await mainCollection.get();
+        this.bot.action("edit_description", async (ctx) => {
+            await ctx.scene.enter("EDIT_FIELD_SCENE"); // Входим в сцену
 
-					if (snapshot.empty) {
-						await ctx.reply("❌ Данные отсутствуют");
-						return;
-					}
-
-					const docId = snapshot.docs[0].id;
-
-					await mainCollection.doc(docId).update({
-						heading: newHeading,
-					});
-
-					await ctx.reply("✅ Заголовок успешно обновлен!");
-				} catch (error) {
-					console.error("Firebase error:", error);
-					await ctx.reply("❌ Ошибка при обновлении заголовка");
-				}
-			});
-		});
-	}
+			ctx.wizard.state = {
+                collectionName: "main",
+                field: "description",
+                successMessage: "Описание успешно обновлено!",
+            };
+        });
+    }
 }

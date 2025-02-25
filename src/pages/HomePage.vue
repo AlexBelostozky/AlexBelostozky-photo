@@ -109,41 +109,8 @@ export default defineComponent({
 			isLoadingProjects: true,
 			isPortraitLoaded: false,
 			projectsToShow: 6,
-
 			mainData: null,
-
-			projects: [
-				// {
-				// 	'name': 'Celsior',
-				// 	'coverUrl': require('@images/content/projects/celsior/celsior-cover.jpg'),
-				// 	'url': '/celsior'
-				// },
-				// {
-				// 	'name': 'Laurel',
-				// 	'coverUrl': require('@images/content/projects/laurel/laurel-cover.jpg'),
-				// 	'url': '/laurel'
-				// },
-				// {
-				// 	'name': 'Mark II',
-				// 	'coverUrl': require('@images/content/projects/mark/mark-cover.jpg'),
-				// 	'url': '/mark'
-				// },
-				// {
-				// 	'name': 'Museum',
-				// 	'coverUrl': require('@images/content/projects/museum/museum-cover.jpg'),
-				// 	'url': '/museum'
-				// },
-				// {
-				// 	'name': '2104',
-				// 	'coverUrl': require('@images/content/projects/2104/2104-cover.jpg'),
-				// 	'url': '/2104'
-				// },
-				// {
-				// 	'name': 'Cresta',
-				// 	'coverUrl': require('@images/content/projects/cresta/cresta-cover.jpg'),
-				// 	'url': '/cresta'
-				// },
-			]
+			projects: []
 		}
 	},
 

@@ -129,6 +129,7 @@ export default defineComponent({
 	display: flex
 	flex-wrap: wrap
 	justify-content: space-evenly
+	align-items: center
 	gap: 20px
 
 .gallery__item-wrapper

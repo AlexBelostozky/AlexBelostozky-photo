@@ -1,10 +1,14 @@
-import { Context } from "telegraf";
+import { Context, Scenes } from "telegraf";
+import { FirestoreService } from "../services/firestore.service";
 
-export interface SessionData {
-	waitingForHeading: boolean;
-	editingDocId: string | null;
+export interface WizardState {
+    collectionName: string;
+    field: string;
+    successMessage: string;
 }
 
 export interface IBotContext extends Context {
-	session: SessionData;
+    scene: Scenes.SceneContextScene<IBotContext, Scenes.WizardSessionData>;
+    wizard: Scenes.WizardContextWizard<IBotContext> & { state: WizardState };
+    firestoreService: FirestoreService; // Добавляем firestoreService в контекст
 }
