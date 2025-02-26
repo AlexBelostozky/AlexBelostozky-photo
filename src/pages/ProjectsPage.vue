@@ -174,10 +174,11 @@ export default defineComponent({
 	display: flex
 	flex-direction: column
 	gap: 32px
-	padding: 60px 0 70px
+	height: 100%
+	padding: 0 0 70px
 
 	@include screen(sm)
-		padding: 40px 0 30px
+		padding: 0 0 30px
 
 .projects-section__filter-wrapper
 	position: sticky
@@ -189,10 +190,18 @@ export default defineComponent({
 	@include screen(sm)
 		top: 40px
 
+.projects-section__results
+	flex-grow: 1
+
+	.container
+		height: 100%
+
 .projects-section__results-grid
 	display: flex
 	flex-direction: column
+	justify-content: space-between
 	gap: 20px
+	height: 100%
 
 .projects-section__empty-list
 	display: flex

@@ -126,10 +126,12 @@ export default defineComponent({
 		},
 
 		blockBody() {
+			document.documentElement.classList.add('blocked-scroll');
 			document.body.classList.add('blocked-scroll');
 		},
 
 		unblockBody() {
+			document.documentElement.classList.remove('blocked-scroll');
 			document.body.classList.remove('blocked-scroll');
 		},
 
@@ -163,7 +165,7 @@ export default defineComponent({
 @use "@styles/mixins" as *
 
 .header
-	position: fixed
+	position: sticky
 	top: 0
 	width: 100%
 	height: auto
@@ -175,6 +177,7 @@ export default defineComponent({
 		height: 40px
 
 		&--opened
+			position: fixed
 			backdrop-filter: unset
 
 .header__container

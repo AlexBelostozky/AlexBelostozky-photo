@@ -162,10 +162,10 @@ export default defineComponent({
 	display: flex
 	flex-direction: column
 	gap: 32px
-	padding: 80px 0 32px
+	padding: 32px 0 32px
 
 	@include screen(sm)
-		padding: 60px 0 30px
+		padding: 30px 0 30px
 
 .project-section__heading
 	max-width: 600px
