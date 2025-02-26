@@ -162,6 +162,7 @@ export default defineComponent({
 	display: flex
 	flex-direction: column
 	gap: 32px
+	background-color: $white
 	padding: 32px 0 32px
 
 	@include screen(sm)
