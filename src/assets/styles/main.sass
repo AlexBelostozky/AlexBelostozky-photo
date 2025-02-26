@@ -14,10 +14,8 @@ html
 
 	@include screen(sm)
 		// padding: 0 min(5vw, 24px)
-		padding-top: max(min(5vw, 24px), env(safe-area-inset-top))
 		padding-right: max(min(5vw, 24px), env(safe-area-inset-right))
 		padding-left: max(min(5vw, 24px), env(safe-area-inset-left))
-		padding-bottom: max(0, env(safe-area-inset-bottom))
 
 	&--mobile-extended
 		@include screen(sm)
@@ -37,6 +35,7 @@ body
 	background: $dark-blue-black-gradient
 	margin: 0
 	padding-top: 0
+	padding-bottom: max(0, env(safe-area-inset-bottom))
 
 .blocked-scroll
 	overflow: hidden
