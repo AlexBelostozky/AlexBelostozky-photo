@@ -289,6 +289,7 @@ export default defineComponent({
 				margin-bottom: 8px
 
 .recent-section
+	background-color: $white
 	padding: 50px 0
 
 .recent-section__wrapper

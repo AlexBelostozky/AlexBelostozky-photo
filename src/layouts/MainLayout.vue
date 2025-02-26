@@ -1,7 +1,7 @@
 <template>
 	<ABHeader />
 
-	<main>
+	<main class="main">
 		<slot />
 	</main>
 
@@ -25,7 +25,7 @@ export default {
 <style lang="sass">
 @use "@styles/variables" as *
 
-main
+.main
 	display: grid
 	align-items: stretch
 	height: 100%
