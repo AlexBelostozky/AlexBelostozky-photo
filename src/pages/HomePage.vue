@@ -183,12 +183,12 @@ export default defineComponent({
 	background-size: 100% 100%
 	background-position: center
 	background-size: cover
-	padding: 120px 0 70px
+	padding: 70px 0
 
 	@include screen(sm)
 		background-image: url('@images/bg-mobile.jpg')
 		background-image: image-set(url('@images/bg-mobile.webp') type('image/webp'), url('@images/bg-mobile.jpg') type('image/jpeg'))
-		padding: 70px 0 40px
+		padding: 20px 0 40px
 
 .about-section__grid
 	display: grid

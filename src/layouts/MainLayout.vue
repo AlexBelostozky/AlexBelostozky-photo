@@ -26,6 +26,9 @@ export default {
 @use "@styles/variables" as *
 
 main
+	display: grid
+	align-items: stretch
+	height: 100%
 	flex-grow: 1
 	margin: 0
 </style>
