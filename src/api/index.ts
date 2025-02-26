@@ -10,7 +10,8 @@ import {
 	DocumentData,
 	getCountFromServer,
 	startAt,
-	orderBy
+	orderBy,
+	QueryConstraint
 } from 'firebase/firestore';
 
 import { Collection } from "@/types/database"
@@ -39,16 +40,17 @@ export const getMainPageData = async (collectionName: Collection) => {
 export const getProjects = async (
 	collectionName: Collection,
 	projectsAmount: number,
-	offset: number = 0
+	offset: number = 0,
+	sorting?: {
+		parameter: string,
+		order?: 'desc' | undefined,
+	},
 ) => {
 	const projectsRef = collection(db, collectionName);
-	// const projectsQuery = lastProject
-	// 	? query(projectsRef, limit(projectsAmount), startAfter(lastProject))
-	// 	: query(projectsRef, limit(projectsAmount));
+	const queryConstraints: QueryConstraint[] = [];
 
 	let startAtDoc: QueryDocumentSnapshot<DocumentData> | null = null;
 
-	console.log(offset);
 	if (offset > 0) {
 		const offsetQuery = query(
 			projectsRef,
@@ -59,19 +61,23 @@ export const getProjects = async (
 		startAtDoc = offsetSnapshot.docs[offset - 1] || null;
 	}
 
-	const projectsQuery = startAtDoc
-		? query(projectsRef, startAfter(startAtDoc), limit(projectsAmount))
-		: query(projectsRef, limit(projectsAmount));
+	startAtDoc && queryConstraints.push(startAfter(startAtDoc));
+	projectsAmount && queryConstraints.push(limit(projectsAmount));
+	sorting && queryConstraints.push(orderBy(sorting.parameter, sorting.order));
+
+	const projectsQuery = query(
+		projectsRef,
+		...queryConstraints
+	);
 
 	const snapshot = await getDocs(projectsQuery);
-
-
 	const totalSnapshot = await getCountFromServer(projectsRef);
 
 	const totalProjects = totalSnapshot.data().count;
 
 	const fetchedProjects = snapshot.docs.map(doc => {
 		const projectData = doc.data() as ProjectType;
+
 		return {
 			id: Number(doc.id),
 			...projectData,
@@ -79,11 +85,7 @@ export const getProjects = async (
 		};
 	});
 
-	const lastFromSnapshot = snapshot.docs
-		? snapshot.docs[snapshot.docs.length - 1]
-		: null;
-
-	return { lastFromSnapshot, fetchedProjects, totalProjects }
+	return { fetchedProjects, totalProjects }
 }
 
 export const getProject = async (

@@ -144,7 +144,12 @@ export default defineComponent({
 
 				const {
 					fetchedProjects
-				} = await getProjects('projects', this.projectsToShow + 1);
+				} = await getProjects(
+					'projects',
+					this.projectsToShow + 1,
+					0,
+					{parameter: 'tags.year', order: 'desc'}
+				);
 
 				this.projects = fetchedProjects;
 			} catch (error){

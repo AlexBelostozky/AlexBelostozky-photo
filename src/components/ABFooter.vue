@@ -22,7 +22,7 @@
 					</li>
 				</ul>
 
-				<a class="footer__tel-link" href="tel:+79996269606">
+				<a class="footer__tel-link" href="tel:+77058045982">
 					+7 705 804 59 82
 				</a>
 			</div>

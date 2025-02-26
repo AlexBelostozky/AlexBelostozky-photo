@@ -55,20 +55,17 @@ import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
-import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 import { getProjects } from '@/api';
 
 
-interface CachedProjects {
-	[key: number]: Array<ProjectType>;
-}
+// interface CachedProjects {
+// 	[key: number]: Array<ProjectType>;
+// }
 
 interface ProjectsPageData {
 	page: number,
 	projectsPerPage: number,
-	lastVisible: QueryDocumentSnapshot<DocumentData, DocumentData> | null,
 	isLoading: boolean,
-	cachedProjects: CachedProjects,
 	showingProjects: Array<ProjectType>,
 	totalProjects: number,
 }
@@ -85,9 +82,7 @@ export default defineComponent({
 		return {
 			page: 1,
 			projectsPerPage: 6,
-			lastVisible: null,
 			isLoading: true,
-			cachedProjects: {},
 			showingProjects: [],
 			totalProjects: 0,
 		}
@@ -95,39 +90,17 @@ export default defineComponent({
 
 	methods: {
 		async showProjects(page: number, projectsPerPage: number) {
-			if (this.cachedProjects[page]) {
-				console.log('try show cached');
-
-				console.log(this.cachedProjects);
-
-				this.showingProjects = this.cachedProjects[page];
-				this.isLoading = false;
-				return;
-			}
-
 			try {
-				console.log('try load new with page: ', this.page);
-
 				this.isLoading = true;
 
 				const offset = (page - 1) * projectsPerPage;
 
 				const {
-					lastFromSnapshot,
 					fetchedProjects,
 					totalProjects
 				} = await getProjects('projects', projectsPerPage, offset);
 
-				this.lastVisible = lastFromSnapshot;
 				this.totalProjects = totalProjects;
-
-				// fetchedProjects.forEach(project => {
-				// 	if (!this.cachedProjects[page]) {
-				// 		this.cachedProjects[page] = [];
-				// 		this.cachedProjects[page].push(project);
-				// 	}
-				// });
-
 				this.showingProjects = fetchedProjects;
 			} catch (error) {
 				console.warn('Failed to get projects from Firebase: ', error)
