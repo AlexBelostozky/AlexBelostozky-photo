@@ -174,7 +174,6 @@ export default defineComponent({
 	display: flex
 	flex-direction: column
 	gap: 32px
-	height: 100%
 	background-color: $white
 	padding: 0 0 70px
 
