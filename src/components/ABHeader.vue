@@ -171,11 +171,10 @@ export default defineComponent({
 	height: auto
 	background-color: rgba(0, 0, 0, 0.75)
 	backdrop-filter: blur(50px)
+	padding-top: max(0, env(safe-area-inset-top))
 	z-index: 10
 
 	@include screen(sm)
-		height: 40px
-
 		&--opened
 			position: fixed
 			backdrop-filter: unset
