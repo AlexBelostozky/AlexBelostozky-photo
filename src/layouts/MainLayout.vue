@@ -28,7 +28,7 @@ export default {
 .main
 	display: grid
 	align-items: stretch
-	height: 100%
+	// height: 100%
 	flex-grow: 1
 	margin: 0
 </style>
