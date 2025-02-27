@@ -142,16 +142,12 @@ export default defineComponent({
 			try {
 				this.isLoadingProjects = true;
 
-				const {
-					fetchedProjects
-				} = await getProjects(
+				({ fetchedProjects: this.projects } = await getProjects(
 					'projects',
 					this.projectsToShow + 1,
 					0,
 					{parameter: 'tags.year', order: 'desc'}
-				);
-
-				this.projects = fetchedProjects;
+				));
 			} catch (error){
 				console.warn('Failed to show projects: ', error);
 			} finally {

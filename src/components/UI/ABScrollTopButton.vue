@@ -20,7 +20,7 @@ export default defineComponent({
 		const needShowButton = ref(false);
 		const scrollThreshold = 15;
 		const lastScroll = ref(0);
-		const throttleDelay = 250;
+		const throttleDelay = 100;
 
 		const onScroll = () => {
 			const currentScroll = window.scrollY;

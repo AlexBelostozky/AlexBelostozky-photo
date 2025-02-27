@@ -1,8 +1,25 @@
 <template>
 	<div class="projects-section">
-		<div class="projects-section__filter-wrapper" v-if="isLoading || showingProjects.length">
+		<div class="projects-section__filter" v-if="isLoading || filters">
 			<div class="container">
-				<h2>Фильтры</h2>
+				<v-form>
+					<div class="project-section__filter-grid">
+						<v-select
+							v-for="(values, key) in filters"
+							class="project-section__filter-select"
+							:key="key"
+							:label="key"
+							:items="[...values]"
+							clearable
+							chips
+							variant="outlined"
+							density="compact"
+							hide-details
+							:clear-icon="'mdil-minus-circle'"
+							:menu-icon="'mdil-chevron-down'"
+						></v-select>
+					</div>
+				</v-form>
 			</div>
 		</div>
 
@@ -55,7 +72,7 @@ import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
-import { getProjects } from '@/api';
+import { getAllTags, getProjects } from '@/api';
 
 
 // interface CachedProjects {
@@ -68,6 +85,7 @@ interface ProjectsPageData {
 	isLoading: boolean,
 	showingProjects: Array<ProjectType>,
 	totalProjects: number,
+	filters: Object | undefined,
 }
 
 export default defineComponent({
@@ -85,6 +103,7 @@ export default defineComponent({
 			isLoading: true,
 			showingProjects: [],
 			totalProjects: 0,
+			filters: {}
 		}
 	},
 
@@ -92,21 +111,23 @@ export default defineComponent({
 		async showProjects(page: number, projectsPerPage: number) {
 			try {
 				this.isLoading = true;
-
 				const offset = (page - 1) * projectsPerPage;
 
-				const {
-					fetchedProjects,
-					totalProjects
-				} = await getProjects('projects', projectsPerPage, offset);
+				({
+					fetchedProjects: this.showingProjects,
+					totalProjects: this.totalProjects
+				} = await getProjects('projects', projectsPerPage, offset));
 
-				this.totalProjects = totalProjects;
-				this.showingProjects = fetchedProjects;
+				this.setupFilters();
 			} catch (error) {
 				console.warn('Failed to get projects from Firebase: ', error)
 			} finally {
 				this.isLoading = false;
 			}
+		},
+
+		async setupFilters() {
+			this.filters = await getAllTags();
 		}
 	},
 
@@ -146,22 +167,35 @@ export default defineComponent({
 .projects-section
 	display: flex
 	flex-direction: column
-	gap: 32px
+	gap: 5px
 	background-color: $white
 	padding: 0 0 70px
 
 	@include screen(sm)
 		padding: 0 0 30px
 
-.projects-section__filter-wrapper
+.projects-section__filter
 	position: sticky
 	top: 57px
+	min-height: 60px
 	background-color: $white-75
 	backdrop-filter: blur(6px)
 	z-index: 1
 
 	@include screen(sm)
 		top: 40px
+
+.project-section__filter-grid
+	display: grid
+	grid-template-columns: repeat(4, 1fr)
+	gap: 15px
+	padding: 10px 0
+
+.project-section__filter-select
+
+
+	.v-field-label
+		text-transform: capitalize
 
 .projects-section__results
 	flex-grow: 1

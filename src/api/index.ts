@@ -88,6 +88,42 @@ export const getProjects = async (
 	return { fetchedProjects, totalProjects }
 }
 
+export const getAllTags = async () => {
+	try {
+		const projectsRef = collection(db, "projects");
+		const snapshot = await getDocs(projectsRef);
+
+		const tagsMap: Record<string, Set<string | number>> = {};
+
+		snapshot.forEach(doc => {
+			const project = doc.data();
+
+			if (project.tags && typeof project.tags === "object") {
+				Object.entries(project.tags).forEach(([key, value ]) => {
+					if (!tagsMap[key]) {
+						tagsMap[key] = new Set();
+					}
+					if (Array.isArray(value)) {
+						value.forEach(val => tagsMap[key].add(val));
+					} else {
+						tagsMap[key].add(value as string | number);
+					}
+				});
+			}
+		});
+
+		const tags = Object.fromEntries(
+			Object.entries(tagsMap).map(([key, values]) => [key, Array.from(values)])
+		);
+
+		console.log(tags);
+
+		return tags;
+	} catch (error) {
+		console.warn('Failed to load tags: ', error)
+	}
+};
+
 export const getProject = async (
 	collectionName: Collection,
 	projectSlug: string,
