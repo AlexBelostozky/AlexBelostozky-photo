@@ -43,8 +43,9 @@ export const getProjects = async (
 	offset: number = 0,
 	sorting?: {
 		parameter: string,
-		order?: 'desc' | undefined,
+		order?: 'desc' | 'asc',
 	},
+	filters?: Record<string, string | number> | {}
 ) => {
 	const projectsRef = collection(db, collectionName);
 	const queryConstraints: QueryConstraint[] = [];
@@ -64,11 +65,16 @@ export const getProjects = async (
 	startAtDoc && queryConstraints.push(startAfter(startAtDoc));
 	projectsAmount && queryConstraints.push(limit(projectsAmount));
 	sorting && queryConstraints.push(orderBy(sorting.parameter, sorting.order));
+	filters && Object.entries(filters).forEach(([key, value]) => {
+		queryConstraints.push(where(`tags.${key}`, '==', value))
+	})
 
 	const projectsQuery = query(
 		projectsRef,
 		...queryConstraints
 	);
+
+	console.log(projectsQuery);
 
 	const snapshot = await getDocs(projectsQuery);
 	const totalSnapshot = await getCountFromServer(projectsRef);

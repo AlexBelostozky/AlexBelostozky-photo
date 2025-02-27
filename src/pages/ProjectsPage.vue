@@ -2,16 +2,30 @@
 	<div class="projects-section">
 		<div class="projects-section__filter" v-if="isLoading || filters">
 			<div class="container">
-				<v-form>
+				<v-form @change="applyFilter">
 					<div class="project-section__filter-grid">
 						<v-select
 							v-for="(values, key) in filters"
+							v-model="filterForm[key]"
 							class="project-section__filter-select"
 							:key="key"
 							:label="key"
 							:items="[...values]"
 							clearable
 							chips
+							variant="outlined"
+							density="compact"
+							hide-details
+							:clear-icon="'mdil-minus-circle'"
+							:menu-icon="'mdil-chevron-down'"
+						></v-select>
+
+						<v-select
+							v-model="filterForm['sorting']"
+							class="project-section__filter-select"
+							label="Сортировка"
+							:items="['Сначала новые', 'Сначала старые']"
+							clearable
 							variant="outlined"
 							density="compact"
 							hide-details
@@ -79,6 +93,11 @@ import { getAllTags, getProjects } from '@/api';
 // 	[key: number]: Array<ProjectType>;
 // }
 
+interface FilterType {
+	sorting?: 'Сначала старые' | 'Сначала новые',
+	[key: string]: string | number | undefined
+}
+
 interface ProjectsPageData {
 	page: number,
 	projectsPerPage: number,
@@ -86,6 +105,7 @@ interface ProjectsPageData {
 	showingProjects: Array<ProjectType>,
 	totalProjects: number,
 	filters: Object | undefined,
+	filterForm: FilterType,
 }
 
 export default defineComponent({
@@ -103,20 +123,38 @@ export default defineComponent({
 			isLoading: true,
 			showingProjects: [],
 			totalProjects: 0,
-			filters: {}
+			filters: {
+				sorting: 'Сначала новые'
+			} as FilterType,
+			filterForm: {}
 		}
 	},
 
 	methods: {
-		async showProjects(page: number, projectsPerPage: number) {
+		async showProjects(page: number, projectsPerPage: number, filters: FilterType = {}) {
 			try {
 				this.isLoading = true;
+
 				const offset = (page - 1) * projectsPerPage;
+				const sortingParam: { parameter: string; order?: "asc" | "desc" } | undefined = filters.sorting
+					? {
+						parameter: 'tags.year',
+						order: filters.sorting === 'Сначала старые' ? 'asc' : 'desc'
+					} : undefined;
+				const queryFilters = {...filters};
+				delete queryFilters.sorting;
+
 
 				({
 					fetchedProjects: this.showingProjects,
 					totalProjects: this.totalProjects
-				} = await getProjects('projects', projectsPerPage, offset));
+				} = await getProjects(
+					'projects',
+					projectsPerPage,
+					offset,
+					sortingParam,
+					queryFilters
+				));
 
 				this.setupFilters();
 			} catch (error) {
@@ -128,6 +166,21 @@ export default defineComponent({
 
 		async setupFilters() {
 			this.filters = await getAllTags();
+		},
+
+		applyFilter() {
+			const params = Object.entries(this.filterForm)
+				.filter(([ , value]) => value)
+				.reduce((acc, [key, value]) => {
+					if (value !== undefined) {
+						acc[key] = value;
+					}
+					return acc;
+				}, {} as Record<string, string | number>);
+
+			this.$router.push({query: {...this.$route.query, ...params}})
+
+			this.showProjects(this.page, this.projectsPerPage, params);
 		}
 	},
 
@@ -155,7 +208,14 @@ export default defineComponent({
 			this.showProjects(value, this.projectsPerPage);
 
 			this.$router.push({ query: { ...this.$route.query, page: value } });
-		}
+		},
+
+		filterForm: {
+			deep: true,
+			handler() {
+				this.applyFilter();
+			}
+		},
 	},
 })
 </script>
@@ -187,9 +247,9 @@ export default defineComponent({
 
 .project-section__filter-grid
 	display: grid
-	grid-template-columns: repeat(4, 1fr)
+	grid-template-columns: repeat(5, 1fr)
 	gap: 15px
-	padding: 10px 0
+	padding: 20px 0
 
 .project-section__filter-select
 
