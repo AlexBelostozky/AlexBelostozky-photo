@@ -2,7 +2,7 @@
 	<div class="projects-section">
 		<div class="projects-section__filter" v-if="isLoading || filters">
 			<div class="container">
-				<v-form @change="applyFilter">
+				<v-form>
 					<div class="project-section__filter-grid">
 						<v-select
 							v-for="(values, key) in filters"
@@ -24,7 +24,10 @@
 							v-model="filterForm['sorting']"
 							class="project-section__filter-select"
 							label="Сортировка"
-							:items="['Сначала новые', 'Сначала старые']"
+							:items="[
+								{ title: 'Сначала новые', value: 'desc' },
+								{ title: 'Сначала старые', value: 'asc' }
+							]"
 							clearable
 							variant="outlined"
 							density="compact"
@@ -88,13 +91,8 @@ import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
 import { getAllTags, getProjects } from '@/api';
 
-
-// interface CachedProjects {
-// 	[key: number]: Array<ProjectType>;
-// }
-
 interface FilterType {
-	sorting?: 'Сначала старые' | 'Сначала новые',
+	sorting?: 'asc' | 'desc',
 	[key: string]: string | number | undefined
 }
 
@@ -123,40 +121,31 @@ export default defineComponent({
 			isLoading: true,
 			showingProjects: [],
 			totalProjects: 0,
-			filters: {
-				sorting: 'Сначала новые'
-			} as FilterType,
+			filters: undefined,
 			filterForm: {}
 		}
 	},
 
 	methods: {
-		async showProjects(page: number, projectsPerPage: number, filters: FilterType = {}) {
+		async showProjects() {
 			try {
 				this.isLoading = true;
 
-				const offset = (page - 1) * projectsPerPage;
-				const sortingParam: { parameter: string; order?: "asc" | "desc" } | undefined = filters.sorting
-					? {
-						parameter: 'tags.year',
-						order: filters.sorting === 'Сначала старые' ? 'asc' : 'desc'
-					} : undefined;
-				const queryFilters = {...filters};
-				delete queryFilters.sorting;
-
+				const offset = (this.page - 1) * this.projectsPerPage;
+				const filters = {...this.filterForm};
+				const sortingParam = filters.sorting;
+				delete filters.sorting;
 
 				({
 					fetchedProjects: this.showingProjects,
 					totalProjects: this.totalProjects
-				} = await getProjects(
-					'projects',
-					projectsPerPage,
+				} = await getProjects({
+					collectionName: 'projects',
+					projectsAmount: this.projectsPerPage,
 					offset,
-					sortingParam,
-					queryFilters
-				));
-
-				this.setupFilters();
+					sorting: sortingParam,
+					filters: filters as Record<string, string | number>
+				}));
 			} catch (error) {
 				console.warn('Failed to get projects from Firebase: ', error)
 			} finally {
@@ -168,52 +157,80 @@ export default defineComponent({
 			this.filters = await getAllTags();
 		},
 
-		applyFilter() {
-			const params = Object.entries(this.filterForm)
-				.filter(([ , value]) => value)
-				.reduce((acc, [key, value]) => {
-					if (value !== undefined) {
-						acc[key] = value;
+		updateRouteQuery() {
+			const params = Object.fromEntries(
+				Object.entries(this.filterForm).filter(([ , value]) => {
+					if (!value) {
+						return
 					}
-					return acc;
-				}, {} as Record<string, string | number>);
+					return value !== undefined && value !== ''
+				}
+			));
 
-			this.$router.push({query: {...this.$route.query, ...params}})
+			params.page = this.page.toString();
 
-			this.showProjects(this.page, this.projectsPerPage, params);
-		}
+			this.$router.push({query: params});
+		},
+
+		setFiltersFromQuery() {
+			const query = this.$route.query;
+
+			this.filterForm = Object.fromEntries(
+				Object.entries(query).map(([key, value]) => {
+					if (Array.isArray(value)) {
+						return [key, value[0]];
+					}
+
+					if (key === 'year') {
+						return [key, Number(value)];
+					}
+
+					return [key, value];
+				})
+			) as FilterType;
+
+			const pageFromUrl = Number(query.page);
+
+			this.page = !isNaN(pageFromUrl) && pageFromUrl > 0 ? pageFromUrl : 1;
+		},
 	},
 
 	beforeMount() {
-		const pageFromURL = Number(this.$route.query.page);
-		if (!isNaN(pageFromURL) && pageFromURL > 0) {
-			this.page = pageFromURL;
-		}
+		this.setFiltersFromQuery();
+		this.showProjects();
 	},
 
 	mounted() {
-		if (!this.showingProjects.length) {
-			this.showProjects(this.page, this.projectsPerPage);
-		}
+		this.setupFilters();
 	},
 
 	computed: {
-		pagesAmount() {
-			return Math.ceil(this.totalProjects / this.projectsPerPage);
+		pagesAmount(): number {
+			return Math.max(Math.ceil(this.totalProjects / this.projectsPerPage), 1)
 		}
 	},
 
 	watch: {
-		page(value) {
-			this.showProjects(value, this.projectsPerPage);
-
-			this.$router.push({ query: { ...this.$route.query, page: value } });
+		'$route.query': {
+			immediate: true,
+			handler() {
+				this.setFiltersFromQuery(),
+				this.showProjects()
+			}
 		},
 
 		filterForm: {
 			deep: true,
 			handler() {
-				this.applyFilter();
+				if (this.page > 1) this.page = 1;
+				this.updateRouteQuery();
+			}
+		},
+
+		page: {
+			immediate: true,
+			handler() {
+				this.updateRouteQuery();
 			}
 		},
 	},

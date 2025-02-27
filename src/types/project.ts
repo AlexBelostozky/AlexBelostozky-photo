@@ -1,3 +1,5 @@
+import { Collection } from "./database";
+
 export interface ImageData {
 	url: string;
 	width: number;
@@ -11,6 +13,14 @@ export type StyledImageData = {
 	naturalHeight: number | null,
 	maxWidth?: string;
 	heightRatio: number,
+}
+
+export type ProjectsApiParams = {
+	collectionName: Collection,
+	projectsAmount: number,
+	offset: number,
+	sorting?: 'desc' | 'asc' | undefined,
+	filters?: Record<string, string | number>
 }
 
 export type ProjectTags = {

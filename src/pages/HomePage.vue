@@ -142,12 +142,12 @@ export default defineComponent({
 			try {
 				this.isLoadingProjects = true;
 
-				({ fetchedProjects: this.projects } = await getProjects(
-					'projects',
-					this.projectsToShow + 1,
-					0,
-					{parameter: 'tags.year', order: 'desc'}
-				));
+				({ fetchedProjects: this.projects } = await getProjects({
+					collectionName: 'projects',
+					projectsAmount: this.projectsToShow + 1,
+					offset: 0,
+					sorting: 'desc'
+				}));
 			} catch (error){
 				console.warn('Failed to show projects: ', error);
 			} finally {
