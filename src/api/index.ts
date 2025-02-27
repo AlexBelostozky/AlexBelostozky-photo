@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 
 import { Collection } from "@/types/database"
-import { ProjectType } from "@/types/project";
+import { ProjectType, ProjectsApiParams } from "@/types/project";
 import { MainPageData } from "@/types/main";
 import { getImageUrl } from '@/utils';
 
@@ -37,17 +37,12 @@ export const getMainPageData = async (collectionName: Collection) => {
 	};
 }
 
-export const getProjects = async (
-	collectionName: Collection,
-	projectsAmount: number,
-	offset: number = 0,
-	sorting?: {
-		parameter: string,
-		order?: 'desc' | undefined,
-	},
-) => {
+export const getProjects = async ( params: ProjectsApiParams ) => {
+	const {collectionName, projectsAmount, offset, sorting, filters} = params
+
 	const projectsRef = collection(db, collectionName);
 	const queryConstraints: QueryConstraint[] = [];
+	const queryConstraintsAllPages: QueryConstraint[] = [];
 
 	let startAtDoc: QueryDocumentSnapshot<DocumentData> | null = null;
 
@@ -63,7 +58,12 @@ export const getProjects = async (
 
 	startAtDoc && queryConstraints.push(startAfter(startAtDoc));
 	projectsAmount && queryConstraints.push(limit(projectsAmount));
-	sorting && queryConstraints.push(orderBy(sorting.parameter, sorting.order));
+	sorting && queryConstraints.push(orderBy('tags.year', sorting || 'asc'));
+	filters && Object.entries(filters).forEach(([key, value]) => {
+		if (key === 'page') return
+		if (key === 'sorting') return
+		queryConstraints.push(where(`tags.${key}`, '==', value))
+	})
 
 	const projectsQuery = query(
 		projectsRef,
@@ -71,10 +71,6 @@ export const getProjects = async (
 	);
 
 	const snapshot = await getDocs(projectsQuery);
-	const totalSnapshot = await getCountFromServer(projectsRef);
-
-	const totalProjects = totalSnapshot.data().count;
-
 	const fetchedProjects = snapshot.docs.map(doc => {
 		const projectData = doc.data() as ProjectType;
 
@@ -85,8 +81,55 @@ export const getProjects = async (
 		};
 	});
 
+	filters && Object.entries(filters).forEach(([key, value]) => {
+		if (key === 'page') return
+		if (key === 'sorting') return
+		queryConstraintsAllPages.push(where(`tags.${key}`, '==', value))
+	})
+
+	const allProjectsQuery = query(
+		projectsRef,
+		...queryConstraintsAllPages
+	)
+	const totalSnapshot = await getCountFromServer(allProjectsQuery);
+	const totalProjects = totalSnapshot.data().count;
+
 	return { fetchedProjects, totalProjects }
 }
+
+export const getAllTags = async () => {
+	try {
+		const projectsRef = collection(db, "projects");
+		const snapshot = await getDocs(projectsRef);
+
+		const tagsMap: Record<string, Set<string | number>> = {};
+
+		snapshot.forEach(doc => {
+			const project = doc.data();
+
+			if (project.tags && typeof project.tags === "object") {
+				Object.entries(project.tags).forEach(([key, value ]) => {
+					if (!tagsMap[key]) {
+						tagsMap[key] = new Set();
+					}
+					if (Array.isArray(value)) {
+						value.forEach(val => tagsMap[key].add(val));
+					} else {
+						tagsMap[key].add(value as string | number);
+					}
+				});
+			}
+		});
+
+		const tags = Object.fromEntries(
+			Object.entries(tagsMap).map(([key, values]) => [key, Array.from(values)])
+		);
+
+		return tags;
+	} catch (error) {
+		console.warn('Failed to load tags: ', error)
+	}
+};
 
 export const getProject = async (
 	collectionName: Collection,

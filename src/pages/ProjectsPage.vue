@@ -1,8 +1,42 @@
 <template>
 	<div class="projects-section">
-		<div class="projects-section__filter-wrapper" v-if="isLoading || showingProjects.length">
+		<div class="projects-section__filter" v-if="isLoading || filters">
 			<div class="container">
-				<h2>Фильтры</h2>
+				<v-form>
+					<div class="project-section__filter-grid">
+						<v-select
+							v-for="(values, key) in filters"
+							v-model="filterForm[key]"
+							class="project-section__filter-select"
+							:key="key"
+							:label="key"
+							:items="[...values]"
+							clearable
+							chips
+							variant="outlined"
+							density="compact"
+							hide-details
+							:clear-icon="'mdil-minus-circle'"
+							:menu-icon="'mdil-chevron-down'"
+						></v-select>
+
+						<v-select
+							v-model="filterForm['sorting']"
+							class="project-section__filter-select"
+							label="Сортировка"
+							:items="[
+								{ title: 'Сначала новые', value: 'desc' },
+								{ title: 'Сначала старые', value: 'asc' }
+							]"
+							clearable
+							variant="outlined"
+							density="compact"
+							hide-details
+							:clear-icon="'mdil-minus-circle'"
+							:menu-icon="'mdil-chevron-down'"
+						></v-select>
+					</div>
+				</v-form>
 			</div>
 		</div>
 
@@ -55,12 +89,12 @@ import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
-import { getProjects } from '@/api';
+import { getAllTags, getProjects } from '@/api';
 
-
-// interface CachedProjects {
-// 	[key: number]: Array<ProjectType>;
-// }
+interface FilterType {
+	sorting?: 'asc' | 'desc',
+	[key: string]: string | number | undefined
+}
 
 interface ProjectsPageData {
 	page: number,
@@ -68,6 +102,8 @@ interface ProjectsPageData {
 	isLoading: boolean,
 	showingProjects: Array<ProjectType>,
 	totalProjects: number,
+	filters: Object | undefined,
+	filterForm: FilterType,
 }
 
 export default defineComponent({
@@ -85,56 +121,118 @@ export default defineComponent({
 			isLoading: true,
 			showingProjects: [],
 			totalProjects: 0,
+			filters: undefined,
+			filterForm: {}
 		}
 	},
 
 	methods: {
-		async showProjects(page: number, projectsPerPage: number) {
+		async showProjects() {
 			try {
 				this.isLoading = true;
 
-				const offset = (page - 1) * projectsPerPage;
+				const offset = (this.page - 1) * this.projectsPerPage;
+				const filters = {...this.filterForm};
+				const sortingParam = filters.sorting;
+				delete filters.sorting;
 
-				const {
-					fetchedProjects,
-					totalProjects
-				} = await getProjects('projects', projectsPerPage, offset);
-
-				this.totalProjects = totalProjects;
-				this.showingProjects = fetchedProjects;
+				({
+					fetchedProjects: this.showingProjects,
+					totalProjects: this.totalProjects
+				} = await getProjects({
+					collectionName: 'projects',
+					projectsAmount: this.projectsPerPage,
+					offset,
+					sorting: sortingParam,
+					filters: filters as Record<string, string | number>
+				}));
 			} catch (error) {
 				console.warn('Failed to get projects from Firebase: ', error)
 			} finally {
 				this.isLoading = false;
 			}
-		}
+		},
+
+		async setupFilters() {
+			this.filters = await getAllTags();
+		},
+
+		updateRouteQuery() {
+			const params = Object.fromEntries(
+				Object.entries(this.filterForm).filter(([ , value]) => {
+					if (!value) {
+						return
+					}
+					return value !== undefined && value !== ''
+				}
+			));
+
+			params.page = this.page.toString();
+
+			this.$router.push({query: params});
+		},
+
+		setFiltersFromQuery() {
+			const query = this.$route.query;
+
+			this.filterForm = Object.fromEntries(
+				Object.entries(query).map(([key, value]) => {
+					if (Array.isArray(value)) {
+						return [key, value[0]];
+					}
+
+					if (key === 'year') {
+						return [key, Number(value)];
+					}
+
+					return [key, value];
+				})
+			) as FilterType;
+
+			const pageFromUrl = Number(query.page);
+
+			this.page = !isNaN(pageFromUrl) && pageFromUrl > 0 ? pageFromUrl : 1;
+		},
 	},
 
 	beforeMount() {
-		const pageFromURL = Number(this.$route.query.page);
-		if (!isNaN(pageFromURL) && pageFromURL > 0) {
-			this.page = pageFromURL;
-		}
+		this.setFiltersFromQuery();
+		this.showProjects();
 	},
 
 	mounted() {
-		if (!this.showingProjects.length) {
-			this.showProjects(this.page, this.projectsPerPage);
-		}
+		this.setupFilters();
 	},
 
 	computed: {
-		pagesAmount() {
-			return Math.ceil(this.totalProjects / this.projectsPerPage);
+		pagesAmount(): number {
+			return Math.max(Math.ceil(this.totalProjects / this.projectsPerPage), 1)
 		}
 	},
 
 	watch: {
-		page(value) {
-			this.showProjects(value, this.projectsPerPage);
+		'$route.query': {
+			immediate: true,
+			handler() {
+				this.setFiltersFromQuery(),
+				this.showProjects()
+			}
+		},
 
-			this.$router.push({ query: { ...this.$route.query, page: value } });
-		}
+		filterForm: {
+			deep: true,
+			handler() {
+				if (this.page > 1) this.page = 1;
+				this.updateRouteQuery();
+			}
+		},
+
+		page: {
+			immediate: true,
+			handler() {
+				this.updateRouteQuery();
+			}
+		},
 	},
 })
 </script>
@@ -146,22 +244,35 @@ export default defineComponent({
 .projects-section
 	display: flex
 	flex-direction: column
-	gap: 32px
+	gap: 5px
 	background-color: $white
 	padding: 0 0 70px
 
 	@include screen(sm)
 		padding: 0 0 30px
 
-.projects-section__filter-wrapper
+.projects-section__filter
 	position: sticky
 	top: 57px
+	min-height: 60px
 	background-color: $white-75
 	backdrop-filter: blur(6px)
 	z-index: 1
 
 	@include screen(sm)
 		top: 40px
+
+.project-section__filter-grid
+	display: grid
+	grid-template-columns: repeat(5, 1fr)
+	gap: 15px
+	padding: 20px 0
+
+.project-section__filter-select
+
+
+	.v-field-label
+		text-transform: capitalize
 
 .projects-section__results
 	flex-grow: 1
