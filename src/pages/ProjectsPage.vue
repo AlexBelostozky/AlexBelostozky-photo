@@ -1,8 +1,8 @@
 <template>
 	<div class="projects-section">
 		<div class="projects-section__filter" v-if="isLoading || filters">
-			<div class="container">
-				<v-form>
+			<div class="container container--mobile-extended">
+				<v-form class="projects-section__filter-form">
 					<div class="project-section__filter-grid">
 						<v-select
 							v-for="(values, key) in filters"
@@ -221,8 +221,11 @@ export default defineComponent({
 
 		filterForm: {
 			deep: true,
-			handler() {
-				if (this.page > 1) this.page = 1;
+			handler(newQuery, oldQuery) {
+				const onlyPageChanged = Object.keys(newQuery).length === Object.keys(oldQuery || {}).length &&
+					Object.keys(newQuery).every(key => key === 'page' || newQuery[key] === oldQuery[key]);
+
+				if (!onlyPageChanged) this.page = 1;
 				this.updateRouteQuery();
 			}
 		},
@@ -261,6 +264,12 @@ export default defineComponent({
 
 	@include screen(sm)
 		top: 40px
+		min-height: 56px
+		width: 100vw
+
+.projects-section__filter-form
+	@include screen(sm)
+		overflow: hidden
 
 .project-section__filter-grid
 	display: grid
@@ -268,9 +277,17 @@ export default defineComponent({
 	gap: 15px
 	padding: 20px 0
 
+	@include screen(sm)
+		grid-template-columns: repeat(5, min(80vw, 160px))
+		gap: 5px
+		padding: 12px max(min(5vw, 24px), env(safe-area-inset-right)) 12px max(min(5vw, 24px), env(safe-area-inset-left))
+		overflow: auto
+		scrollbar-width: none
+
+		&::-webkit-scrollbar
+			display: none
+
 .project-section__filter-select
-
-
 	.v-field-label
 		text-transform: capitalize
 

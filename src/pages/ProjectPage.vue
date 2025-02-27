@@ -166,7 +166,7 @@ export default defineComponent({
 	padding: 32px 0 32px
 
 	@include screen(sm)
-		padding: 30px 0 30px
+		padding: 15px 0 30px
 
 .project-section__heading
 	max-width: 600px
