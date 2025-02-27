@@ -43,27 +43,31 @@ export const getProjects = async ( params: ProjectsApiParams ) => {
 	const projectsRef = collection(db, collectionName);
 	const queryConstraints: QueryConstraint[] = [];
 	const queryConstraintsAllPages: QueryConstraint[] = [];
-
 	let startAtDoc: QueryDocumentSnapshot<DocumentData> | null = null;
 
-	if (offset > 0) {
-		const offsetQuery = query(
-			projectsRef,
-			limit(projectsAmount)
-		);
+	if (filters) {
+		Object.entries(filters).forEach(([key, value]) => {
+			if (key !== 'page' && key !== 'sorting') {
+				queryConstraints.push(where(`tags.${key}`, '==', value));
+			}
+		});
+	}
 
+	if (sorting) {
+		queryConstraints.push(orderBy('tags.year', sorting || 'asc'));
+	}
+
+	if (offset > 0) {
+		const offsetQuery = query(projectsRef, ...queryConstraints, limit(offset));
 		const offsetSnapshot = await getDocs(offsetQuery);
 		startAtDoc = offsetSnapshot.docs[offset - 1] || null;
 	}
 
-	startAtDoc && queryConstraints.push(startAfter(startAtDoc));
-	projectsAmount && queryConstraints.push(limit(projectsAmount));
-	sorting && queryConstraints.push(orderBy('tags.year', sorting || 'asc'));
-	filters && Object.entries(filters).forEach(([key, value]) => {
-		if (key === 'page') return
-		if (key === 'sorting') return
-		queryConstraints.push(where(`tags.${key}`, '==', value))
-	})
+	if (startAtDoc) {
+		queryConstraints.push(startAfter(startAtDoc));
+	}
+
+	queryConstraints.push(limit(projectsAmount));
 
 	const projectsQuery = query(
 		projectsRef,
