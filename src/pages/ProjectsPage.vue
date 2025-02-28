@@ -134,6 +134,8 @@ export default defineComponent({
 			try {
 				this.isLoading = true;
 
+				console.log('On showProjects: page', this.page);
+
 				const offset = (this.page - 1) * this.projectsPerPage;
 				const filters = {...this.filterForm};
 				const sortingParam = filters.sorting;
@@ -221,8 +223,10 @@ export default defineComponent({
 	watch: {
 		'$route.query': {
 			immediate: true,
-			handler() {
-				this.setFiltersFromQuery(),
+			async handler() {
+				console.log('On change route');
+
+				await this.setFiltersFromQuery(),
 				this.showProjects()
 			}
 		},
@@ -230,6 +234,9 @@ export default defineComponent({
 		filterForm: {
 			deep: true,
 			handler(newQuery, oldQuery) {
+				console.log('On watch filterForm');
+
+
 				const onlyPageChanged = Object.keys(newQuery).length === Object.keys(oldQuery || {}).length &&
 					Object.keys(newQuery).every(key => key === 'page' || newQuery[key] === oldQuery[key]);
 
