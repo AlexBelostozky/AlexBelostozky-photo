@@ -67,6 +67,7 @@
 						v-if="pagesAmount > 1"
 						v-model="page"
 						:length="pagesAmount"
+						:density="isSmallScreen ? 'compact' : 'default'"
 					/>
 				</div>
 			</div>
@@ -98,6 +99,7 @@ interface FilterType {
 }
 
 interface ProjectsPageData {
+	isSmallScreen: Boolean,
 	page: number,
 	projectsPerPage: number,
 	isLoading: boolean,
@@ -118,6 +120,7 @@ export default defineComponent({
 
 	data(): ProjectsPageData {
 		return {
+			isSmallScreen: window.innerWidth <= 375,
 			page: 1,
 			projectsPerPage: 6,
 			isLoading: true,
@@ -201,6 +204,10 @@ export default defineComponent({
 
 			this.page = !isNaN(pageFromUrl) && pageFromUrl > 0 ? pageFromUrl : 1;
 		},
+
+		handleResize() {
+			this.isSmallScreen = window.innerWidth <= 385;
+		}
 	},
 
 	beforeMount() {
@@ -210,6 +217,8 @@ export default defineComponent({
 
 	mounted() {
 		this.setupFilters();
+
+		window.addEventListener('resize', this.handleResize)
 	},
 
 	computed: {
