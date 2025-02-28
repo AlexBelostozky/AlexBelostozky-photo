@@ -10,7 +10,7 @@
 							class="project-section__filter-select"
 							:key="key"
 							:label="key"
-							:items="[...values]"
+							:items="[...values].sort((a, b) => String(a).localeCompare(String(b)))"
 							clearable
 							chips
 							variant="outlined"
