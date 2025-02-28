@@ -154,7 +154,11 @@ export default defineComponent({
 		},
 
 		async setupFilters() {
-			this.filters = await getAllTags();
+			const filters = {...this.filterForm};
+			delete filters.sorting;
+			delete filters.page;
+
+			this.filters = await getAllTags(filters as Record<string, string | number>);
 		},
 
 		updateRouteQuery() {
@@ -225,8 +229,11 @@ export default defineComponent({
 				const onlyPageChanged = Object.keys(newQuery).length === Object.keys(oldQuery || {}).length &&
 					Object.keys(newQuery).every(key => key === 'page' || newQuery[key] === oldQuery[key]);
 
-				if (!onlyPageChanged) this.page = 1;
+				if (!onlyPageChanged) {
+					this.page = 1
+				}
 				this.updateRouteQuery();
+				this.setupFilters();
 			}
 		},
 

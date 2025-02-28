@@ -69,11 +69,7 @@ export const getProjects = async ( params: ProjectsApiParams ) => {
 
 	queryConstraints.push(limit(projectsAmount));
 
-	const projectsQuery = query(
-		projectsRef,
-		...queryConstraints
-	);
-
+	const projectsQuery = query(projectsRef, ...queryConstraints);
 	const snapshot = await getDocs(projectsQuery);
 	const fetchedProjects = snapshot.docs.map(doc => {
 		const projectData = doc.data() as ProjectType;
@@ -101,10 +97,21 @@ export const getProjects = async ( params: ProjectsApiParams ) => {
 	return { fetchedProjects, totalProjects }
 }
 
-export const getAllTags = async () => {
+export const getAllTags = async (filters: Pick<ProjectsApiParams, 'filters'>) => {
 	try {
+		const queryConstraints: QueryConstraint[] = [];
+
+		if (filters) {
+			Object.entries(filters).forEach(([key, value]) => {
+				if (key !== 'page' && key !== 'sorting') {
+					queryConstraints.push(where(`tags.${key}`, '==', value));
+				}
+			});
+		}
+
 		const projectsRef = collection(db, "projects");
-		const snapshot = await getDocs(projectsRef);
+		const projectsQuery = query(projectsRef, ...queryConstraints)
+		const snapshot = await getDocs(projectsQuery);
 
 		const tagsMap: Record<string, Set<string | number>> = {};
 
