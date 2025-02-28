@@ -53,3 +53,23 @@ export const getImageDimensions = (url: string): Promise<{ width: number; height
 		img.onerror = reject;
 	});
 };
+
+export const applySpecificOrder = <T extends Record<string, any>>(
+	items: T | undefined,
+	order: string[]
+): [keyof T, T[keyof T]][] => {
+	if (!items) return [];
+
+	return Object.entries(items).sort((a, b) => {
+		const indexA = order.indexOf(a[0]);
+		const indexB = order.indexOf(b[0]);
+
+		if (indexA === -1 && indexB === -1) {
+			return a[0].localeCompare(b[0]);
+		}
+
+		if (indexA === -1) return 1;
+		if (indexB === -1) return -1;
+		return indexA - indexB;
+	}) as [keyof T, T[keyof T]][];
+};

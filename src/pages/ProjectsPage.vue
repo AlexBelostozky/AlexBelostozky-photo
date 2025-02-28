@@ -90,6 +90,7 @@ import { ProjectType } from '@/types/project';
 import ABProjectItem from '@/components/ABProjectItem.vue';
 import ABProjectItemLoader from '@/components/UI/ABProjectItemLoader.vue';
 import { getAllTags, getProjects } from '@/api';
+import { applySpecificOrder } from '@/utils';
 
 interface FilterType {
 	sorting?: 'asc' | 'desc',
@@ -104,6 +105,7 @@ interface ProjectsPageData {
 	totalProjects: number,
 	filters: Object | undefined,
 	filterForm: FilterType,
+	filtersOrder: Array<string>
 }
 
 export default defineComponent({
@@ -122,7 +124,8 @@ export default defineComponent({
 			showingProjects: [],
 			totalProjects: 0,
 			filters: undefined,
-			filterForm: {}
+			filterForm: {},
+			filtersOrder: ['make', 'model', 'chassis', 'year']
 		}
 	},
 
@@ -158,7 +161,8 @@ export default defineComponent({
 			delete filters.sorting;
 			delete filters.page;
 
-			this.filters = await getAllTags(filters as Record<string, string | number>);
+			this.filters = await getAllTags(filters as Record<string, string | number>)
+				.then(res => Object.fromEntries(applySpecificOrder(res, this.filtersOrder)));
 		},
 
 		updateRouteQuery() {
