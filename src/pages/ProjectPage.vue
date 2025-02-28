@@ -69,7 +69,7 @@
 import { defineComponent } from 'vue';
 import { ProjectType } from '@/types/project';
 import { getPreviousRoute } from '@/router/index';
-import { renderMarkdown } from '@/utils';
+import { applySpecificOrder, renderMarkdown } from '@/utils';
 import ABGallery from '@/components/ABGallery.vue';
 
 import { getProject } from '@/api';
@@ -78,6 +78,7 @@ import ABScrollTopButton from '@/components/UI/ABScrollTopButton.vue';
 interface ProjectPageData {
 	isLoading: boolean,
 	projectData: ProjectType | null,
+	tagsOrder: Array<string>
 }
 
 export default defineComponent({
@@ -92,6 +93,7 @@ export default defineComponent({
 		return {
 			isLoading: true,
 			projectData: null,
+			tagsOrder: ['make', 'model', 'chassis', 'year']
 		}
 	},
 
@@ -123,22 +125,7 @@ export default defineComponent({
 
 	computed: {
 		sortedTags(): [string, string | number][] {
-			if (!this.projectData || !this.projectData.tags ) return [];
-
-			const order = ['make', 'model', 'chassis', 'year'];
-
-			return Object.entries(this.projectData.tags).sort((a, b) => {
-				const indexA = order.indexOf(a[0]);
-				const indexB = order.indexOf(b[0]);
-
-				if (indexA === -1 && indexB === -1) {
-					return a[0].localeCompare(b[0]);
-				}
-
-				if (indexA === -1) return 1;
-				if (indexB === -1) return -1;
-				return indexA - indexB;
-			});
+			return applySpecificOrder(this.projectData?.tags, this.tagsOrder);
 		},
 
 		backLink() {
