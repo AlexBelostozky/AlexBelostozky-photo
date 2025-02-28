@@ -221,8 +221,8 @@ export default defineComponent({
 	watch: {
 		'$route.query': {
 			immediate: true,
-			handler() {
-				this.setFiltersFromQuery(),
+			async handler() {
+				await this.setFiltersFromQuery(),
 				this.showProjects()
 			}
 		},

@@ -73,6 +73,7 @@ export default defineComponent({
 	max-width: 100%
 	max-height: 85vh
 	object-fit: contain
+	cursor: pointer
 
 	.v-skeleton-loader__image
 		height: inherit
