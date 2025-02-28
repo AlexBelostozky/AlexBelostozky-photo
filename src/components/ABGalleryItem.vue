@@ -20,6 +20,7 @@
 		:style="`width: ${ imageData.maxWidth }`"
 		@load="handleLoad"
 		@error="handleError"
+		data-fancybox="gallery-item"
 	>
 </template>
 

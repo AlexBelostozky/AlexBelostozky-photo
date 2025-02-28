@@ -21,6 +21,8 @@
 import { defineComponent, PropType } from 'vue';
 import { ProjectType, StyledImageData } from '@/types/project';
 import ABGalleryItem from './ABGalleryItem.vue';
+import { Fancybox } from '@fancyapps/ui';
+import "@fancyapps/ui/dist/fancybox/fancybox.css"
 
 interface Gallery {
 	maxImageHeightScreenRatio: number,
@@ -112,7 +114,11 @@ export default defineComponent({
 	},
 
 	mounted() {
-		window.addEventListener('resize', this.styleImages)
+		window.addEventListener('resize', this.styleImages);
+
+		Fancybox.bind("[data-fancybox]", {
+			// Your custom options
+		});
 	},
 
 	beforeUnmount() {
