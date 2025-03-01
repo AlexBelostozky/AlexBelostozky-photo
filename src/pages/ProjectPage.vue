@@ -109,11 +109,32 @@ export default defineComponent({
 				const fetchedProject = await getProject('projects', projectSlug);
 
 				this.projectData = fetchedProject;
+
+				fetchedProject && this.setMetaTags(fetchedProject);
 			} catch (error) {
 				console.warn('Failed to get project from Firebase: ', error)
 			} finally {
 				this.isLoading = false;
 			}
+		},
+
+		setMetaTags(projectData: ProjectType) {
+			document.title = projectData.name;
+
+			const descriptionMeta = document.querySelector('meta[name="description"]');
+			if (descriptionMeta) descriptionMeta.setAttribute('content', 'Проект AlexBelostozky');
+
+			const ogTitle = document.querySelector('meta[property="og:title"]');
+			if (ogTitle) ogTitle.setAttribute('content', projectData.name);
+
+			const ogDescription = document.querySelector('meta[property="og:description"]');
+			if (ogDescription) ogDescription.setAttribute('content', 'Проект AlexBelostozky');
+
+			const ogImage = document.querySelector('meta[property="og:image"]');
+			if (ogImage && projectData.cover_url) ogImage.setAttribute('content', projectData.cover_url);
+
+			const ogUrl = document.querySelector('meta[property="og:url"]');
+			if (ogUrl) ogUrl.setAttribute('content', window.location.href);
 		},
 
 		renderMarkdown,
