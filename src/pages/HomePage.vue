@@ -146,7 +146,7 @@ export default defineComponent({
 					collectionName: 'projects',
 					projectsAmount: this.projectsToShow + 1,
 					offset: 0,
-					sorting: 'desc'
+					sorting: 'asc'
 				}));
 			} catch (error){
 				console.warn('Failed to show projects: ', error);

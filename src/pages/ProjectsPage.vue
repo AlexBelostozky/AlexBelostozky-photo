@@ -67,6 +67,7 @@
 						v-if="pagesAmount > 1"
 						v-model="page"
 						:length="pagesAmount"
+						total-visible="5"
 						:density="isSmallScreen ? 'compact' : 'default'"
 					/>
 				</div>

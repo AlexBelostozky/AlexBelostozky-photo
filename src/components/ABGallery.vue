@@ -117,7 +117,9 @@ export default defineComponent({
 		window.addEventListener('resize', this.styleImages);
 
 		Fancybox.bind("[data-fancybox]", {
-			// Your custom options
+			Carousel: {
+				infinite: false,
+			},
 		});
 	},
 
