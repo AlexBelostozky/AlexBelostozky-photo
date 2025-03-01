@@ -18,7 +18,10 @@
     <link rel="apple-touch-icon" href="<%= htmlWebpackPlugin.options.publicPath %>favicons/apple-touch-icon.png">
     <link rel="manifest" href="<%= htmlWebpackPlugin.options.publicPath %>favicons/site.webmanifest">
     <link rel="mask-icon" href="<%= htmlWebpackPlugin.options.publicPath %>favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="canonical" href="https://alexbelostozky.github.io/AlexBelostozky-photo/" />
 
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="AlexBelostozky Photo" />
     <meta property="og:title" content="Alex Belostozky" />
     <meta property="og:description" content="Автомобильный энтузиаст и фотограф" />
     <meta property="og:image" content="<%= htmlWebpackPlugin.options.publicPath %>images/og-image.jpg" />
@@ -30,6 +33,20 @@
     <meta name="twitter:title" content="Alex Belostozky" />
     <meta name="twitter:description" content="Автомобильный энтузиаст и фотограф" />
     <meta name="twitter:image" content="<%= htmlWebpackPlugin.options.publicPath %>images/og-image.jpg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "Person",
+        "name": "Alex Belostozky",
+        "url": "ttps://alexbelostozky.github.io/AlexBelostozky-photo/",
+        "sameAs": [
+          "https://www.instagram.com/alexbelostozky",
+          "https://www.facebook.com/alexbelostozky",
+          "https://www.youtube.com/alexbelostozky"
+        ]
+      }
+    </script>
   </head>
 
   <body>
