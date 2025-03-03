@@ -4,32 +4,41 @@ Author: [Alexander Belostozky](https://github.com/AlexBelostozky)
 
 ---
 
-AlexBelostozky Photo is an portfolio page for an automotive photographer. Its allows the user to view works and contact to photographer. It is my very first project witch I start before [HTML Academy](https://htmlacademy.ru) course.
+AlexBelostozky Photo is an portfolio page for an automotive photographer. Its allows the user to view different projects using filter settings and contact to the photographer.
 
-<img  width="100%" alt="Project preview" src="./repository files/preview.jpg">
+<img  width="100%" alt="Project preview" src="./repository files/preview-v2.jpg">
 
 ---
 
 ## Statement of work
 
-Only Figma UI design were originally given.
+It is **2.0** version of my very first project when I started to learn frontend.
 
-And my task was to try to make my first **HTML layout**. I think it's not bad for the first time 😀
-Isn't it?
+My goal in 1.0 version was to try to make my first **HTML layout**, but now when I already have significant commercial experience in development, i decided to migrate my project to **Vue.js**, **TypeScript** and **SASS**.
 
 ---
 
 ## Results
 
-I got my first experience in HTML layout and CSS web page styling. And portfolio for me as a automotive photographer, of course 😀
+Successfully implemented **Vue.js** with **Vue-router**, **TypeScript** for a strict types and **SASS** for styling.
+
+Beside base technologies in 2.0 version I used:
+– **Firebase** to store projects data
+– **Cloudinary** to store images
+– some components from **Vuetify UI library**
+– script to prettify text
+– **FancyBox** as library for fullscreen images view
+– **GitHub CI** for automated deployment to **GitHub Pages**
 
 ---
 
 ## Improvements plan
 Further I want to add the following improvements to the project:
-- [ ] create adaptive layout for mobile, tablet and desktop
-- [ ] implement BEM methodology
+- [X] create adaptive layout for mobile, tablet and desktop
+- [X] implement BEM methodology
+- [X] implement Vue.js framework
+- [ ] develop an Telegram bot for site administration
 - [ ] implement image adaptation for screens with different DPI
-- [ ] implement Gulp automatisation
 - [ ] implement rendering optimisation
-- [ ] add possibility to select favorites photos and pay for its download
+- [ ] implement query memoisation
+- [ ] possibility to select favorites photos and pay for its download
