@@ -9,7 +9,6 @@ import {
 	QueryDocumentSnapshot,
 	DocumentData,
 	getCountFromServer,
-	startAt,
 	orderBy,
 	QueryConstraint
 } from 'firebase/firestore';
