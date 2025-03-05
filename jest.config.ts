@@ -35,6 +35,8 @@ const config: Config = {
   // The test environment that will be used for testing
   testEnvironment: "node",
 
+  setupFiles: ['<rootDir>/jest.setup.ts'],
+
   // A map from regular expressions to paths to transformers
   transform: {
     "^.+\\.tsx?$": "ts-jest",
