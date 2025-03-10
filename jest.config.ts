@@ -33,7 +33,7 @@ const config: Config = {
   preset: "ts-jest",
 
   // The test environment that will be used for testing
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
 
   setupFiles: ['<rootDir>/jest.setup.ts'],
 

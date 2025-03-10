@@ -108,7 +108,7 @@ export default defineComponent({
 
 				const fetchedProject = await getProject('projects', projectSlug);
 
-				this.projectData = fetchedProject;
+				this.projectData = fetchedProject || null;
 
 				fetchedProject && this.setMetaTags(fetchedProject);
 			} catch (error) {

@@ -52,7 +52,7 @@
 							/>
 						</template>
 
-						<template v-else-if="showingProjects.length">
+						<template v-else-if="showingProjects?.length">
 							<ABProjectItem
 								v-for="project in showingProjects"
 								:key="project.slug"
@@ -74,7 +74,7 @@
 			</div>
 		</div>
 
-		<template v-if="!isLoading && !showingProjects.length">
+		<template v-if="!isLoading && !showingProjects?.length">
 			<div class="projects-section__empty-list">
 				<v-empty-state
 					title="Проекты не найдены..."
@@ -104,7 +104,7 @@ interface ProjectsPageData {
 	page: number,
 	projectsPerPage: number,
 	isLoading: boolean,
-	showingProjects: Array<ProjectType>,
+	showingProjects: Array<ProjectType> | null,
 	totalProjects: number,
 	filters: Object | undefined,
 	filterForm: FilterType,
@@ -152,7 +152,7 @@ export default defineComponent({
 					offset,
 					sorting: sortingParam,
 					filters: filters as Record<string, string | number>
-				}));
+				}) || { fetchedProjects: [], totalProjects: 0 })
 			} catch (error) {
 				console.warn('Failed to get projects from Firebase: ', error)
 			} finally {
