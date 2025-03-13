@@ -102,6 +102,7 @@ export const getProjects = async ( params: ProjectsApiParams ) => {
 		return { fetchedProjects, totalProjects }
 	} catch (error) {
 		console.warn('Failed to get projects: ', error);
+		return null
 	}
 }
 
