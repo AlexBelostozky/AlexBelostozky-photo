@@ -72,7 +72,7 @@
 
 				<router-link
 					class="recent-section__link"
-					v-if="projects.length > projectsToShow"
+					v-if="projects && projects.length > projectsToShow"
 					:to="{name: 'Projects'}"
 				>
 					Все&nbsp;проекты
@@ -100,7 +100,7 @@ interface HomePageData {
 	isPortraitLoaded: boolean,
 	projectsToShow: number,
 	mainData: MainPageData | null,
-	projects: Array<ProjectType>,
+	projects: Array<ProjectType> | null,
 }
 
 export default defineComponent({
@@ -130,7 +130,7 @@ export default defineComponent({
 		async showMainPageData () {
 			try {
 				this.isLoadingMainData = true;
-				this.mainData = await getMainPageData('main');
+				this.mainData = await getMainPageData('main') || null;
 			} catch (error) {
 				console.warn('Failed to show main: ', error);
 			} finally {
@@ -147,7 +147,7 @@ export default defineComponent({
 					projectsAmount: this.projectsToShow + 1,
 					offset: 0,
 					sorting: 'asc'
-				}));
+				}) || {fetchedProjects: [], totalProjects: 0});
 			} catch (error){
 				console.warn('Failed to show projects: ', error);
 			} finally {
@@ -166,7 +166,7 @@ export default defineComponent({
 
 	computed: {
 		recentProjects(): Array<ProjectType>  {
-			return this.projects.slice(0, this.projectsToShow);
+			return this.projects ? this.projects.slice(0, this.projectsToShow) : [];
 		},
 	}
 })

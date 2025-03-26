@@ -3,6 +3,16 @@ import MarkdownIt from "markdown-it"
 const markdownItLinkAttributes = require('markdown-it-link-attributes');
 
 export const getImageUrl = (publicId: string) => {
+	if (!publicId || typeof publicId !== 'string') {
+		console.warn('Failed to get image url: invalid publicId', publicId);
+		return ''
+	}
+
+	if (!cloudinaryConfig?.cloudName) {
+		console.warn('Failed to get image url: cloudname is missing');
+		return ''
+	}
+
 	return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload/${publicId}.jpg`;
 }
 

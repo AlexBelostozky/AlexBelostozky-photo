@@ -9,7 +9,6 @@ import {
 	QueryDocumentSnapshot,
 	DocumentData,
 	getCountFromServer,
-	startAt,
 	orderBy,
 	QueryConstraint
 } from 'firebase/firestore';
@@ -21,80 +20,90 @@ import { getImageUrl } from '@/utils';
 
 
 export const getMainPageData = async (collectionName: Collection) => {
-	const mainRef = collection(db, collectionName);
-	const mainQuery = query(mainRef);
-	const snapshot = await getDocs(mainQuery);
-	const fetchedData = snapshot.docs[0].data() as MainPageData;
+	try {
+		const mainRef = collection(db, collectionName);
+		const mainQuery = query(mainRef);
+		const snapshot = await getDocs(mainQuery);
+		const fetchedData = snapshot.docs[0].data() as MainPageData;
 
-	return {
-		...fetchedData,
-		portrait: {
-			desktop: getImageUrl(fetchedData.portrait.desktop),
-			desktop_webp: getImageUrl(fetchedData.portrait.desktop_webp),
-			mobile: getImageUrl(fetchedData.portrait.mobile),
-			mobile_webp: getImageUrl(fetchedData.portrait.mobile_webp),
-		},
-	};
+		return {
+			...fetchedData,
+			portrait: {
+				desktop: getImageUrl(fetchedData.portrait.desktop),
+				desktop_webp: getImageUrl(fetchedData.portrait.desktop_webp),
+				mobile: getImageUrl(fetchedData.portrait.mobile),
+				mobile_webp: getImageUrl(fetchedData.portrait.mobile_webp),
+			},
+		};
+	} catch (error) {
+		console.warn('Failed to get main data: ', error);
+	}
+
 }
 
 export const getProjects = async ( params: ProjectsApiParams ) => {
-	const {collectionName, projectsAmount, offset, sorting, filters} = params
+	try {
+		const {collectionName, projectsAmount, offset, sorting, filters} = params
 
-	const projectsRef = collection(db, collectionName);
-	const queryConstraints: QueryConstraint[] = [];
-	const queryConstraintsAllPages: QueryConstraint[] = [];
-	let startAtDoc: QueryDocumentSnapshot<DocumentData> | null = null;
+		const projectsRef = collection(db, collectionName);
+		const queryConstraints: QueryConstraint[] = [];
+		const queryConstraintsAllPages: QueryConstraint[] = [];
+		let startAtDoc: QueryDocumentSnapshot<DocumentData> | null = null;
 
-	if (filters) {
-		Object.entries(filters).forEach(([key, value]) => {
-			if (key !== 'page' && key !== 'sorting') {
-				queryConstraints.push(where(`tags.${key}`, '==', value));
-			}
+		if (filters) {
+			Object.entries(filters).forEach(([key, value]) => {
+				if (key !== 'page' && key !== 'sorting') {
+					queryConstraints.push(where(`tags.${key}`, '==', value));
+				}
+			});
+		}
+
+		if (sorting) {
+			queryConstraints.push(orderBy('tags.year', sorting || 'asc'));
+		}
+
+		if (offset > 0) {
+			const offsetQuery = query(projectsRef, ...queryConstraints, limit(offset));
+			const offsetSnapshot = await getDocs(offsetQuery);
+			startAtDoc = offsetSnapshot.docs[offset - 1] || null;
+		}
+
+		if (startAtDoc) {
+			queryConstraints.push(startAfter(startAtDoc));
+		}
+
+		queryConstraints.push(limit(projectsAmount));
+
+		const projectsQuery = query(projectsRef, ...queryConstraints);
+		const snapshot = await getDocs(projectsQuery);
+		const fetchedProjects = snapshot.docs.map(doc => {
+			const projectData = doc.data() as ProjectType;
+
+			return {
+				id: Number(doc.id),
+				...projectData,
+				cover_url: getImageUrl(projectData.cover_url)
+			};
 		});
+
+		filters && Object.entries(filters).forEach(([key, value]) => {
+			if (['page', 'sorting'].includes(key)) return
+
+			queryConstraintsAllPages.push(where(`tags.${key}`, '==', value))
+		})
+
+		const allProjectsQuery = query(
+			projectsRef,
+			...queryConstraintsAllPages
+		)
+		const totalSnapshot = await getCountFromServer(allProjectsQuery);
+		const totalProjects = totalSnapshot.data().count;
+
+		return { fetchedProjects, totalProjects }
+	} catch (error) {
+		console.warn('Failed to get projects: ', error);
+		return null
 	}
-
-	if (sorting) {
-		queryConstraints.push(orderBy('tags.year', sorting || 'asc'));
-	}
-
-	if (offset > 0) {
-		const offsetQuery = query(projectsRef, ...queryConstraints, limit(offset));
-		const offsetSnapshot = await getDocs(offsetQuery);
-		startAtDoc = offsetSnapshot.docs[offset - 1] || null;
-	}
-
-	if (startAtDoc) {
-		queryConstraints.push(startAfter(startAtDoc));
-	}
-
-	queryConstraints.push(limit(projectsAmount));
-
-	const projectsQuery = query(projectsRef, ...queryConstraints);
-	const snapshot = await getDocs(projectsQuery);
-	const fetchedProjects = snapshot.docs.map(doc => {
-		const projectData = doc.data() as ProjectType;
-
-		return {
-			id: Number(doc.id),
-			...projectData,
-			cover_url: getImageUrl(projectData.cover_url)
-		};
-	});
-
-	filters && Object.entries(filters).forEach(([key, value]) => {
-		if (key === 'page') return
-		if (key === 'sorting') return
-		queryConstraintsAllPages.push(where(`tags.${key}`, '==', value))
-	})
-
-	const allProjectsQuery = query(
-		projectsRef,
-		...queryConstraintsAllPages
-	)
-	const totalSnapshot = await getCountFromServer(allProjectsQuery);
-	const totalProjects = totalSnapshot.data().count;
-
-	return { fetchedProjects, totalProjects }
 }
 
 export const getAllTags = async (filters: Pick<ProjectsApiParams, 'filters'>) => {
@@ -146,30 +155,34 @@ export const getProject = async (
 	collectionName: Collection,
 	projectSlug: string,
 ) => {
-	const projectsRef = collection(db, collectionName);
-	const projectsQuery = query(projectsRef, where('slug', '==', projectSlug));
+	try {
+		const projectsRef = collection(db, collectionName);
+		const projectsQuery = query(projectsRef, where('slug', '==', projectSlug));
 
-	const snapshot = await getDocs(projectsQuery);
+		const snapshot = await getDocs(projectsQuery);
 
-	if (snapshot.empty) return null;
+		if (snapshot.empty) return null;
 
-	const fetchedProject = snapshot.docs.map(doc => {
-		const projectData = doc.data() as ProjectType;
+		const fetchedProject = snapshot.docs.map(doc => {
+			const projectData = doc.data() as ProjectType;
 
-		const mappedImages = projectData?.images?.map(imageData => {
+			const mappedImages = projectData?.images?.map(imageData => {
+				return {
+					...imageData,
+					url: getImageUrl(imageData.url)
+				}
+			})
+
 			return {
-				...imageData,
-				url: getImageUrl(imageData.url)
-			}
-		})
+				id: Number(doc.id),
+				...projectData,
+				cover_url: getImageUrl(projectData.cover_url),
+				images: mappedImages,
+			};
+		});
 
-		return {
-			id: Number(doc.id),
-			...projectData,
-			cover_url: getImageUrl(projectData.cover_url),
-			images: mappedImages,
-		};
-	});
-
-	return fetchedProject[0]
+		return fetchedProject[0]
+	} catch (error) {
+		console.warn('Falef to get project: ', error);
+	}
 }
