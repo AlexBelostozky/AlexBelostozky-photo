@@ -6,7 +6,7 @@ Author: [Alexander Belostozky](https://github.com/AlexBelostozky)
 
 AlexBelostozky Photo is an portfolio page for an automotive photographer. Its allows the user to view different projects using filter settings and contact to the photographer.
 
-<img  width="100%" alt="Project preview" src="./repository files/preview-v2.jpg">
+<img  width="100%" alt="Project preview" src="./repository files/preview1.jpg">
 
 ---
 
