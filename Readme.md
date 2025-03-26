@@ -28,6 +28,7 @@ Beside base technologies in 2.0 version I used:
 – some components from **Vuetify UI library**
 – script to prettify text
 – **FancyBox** as library for fullscreen images view
+– unit-testing with **Jest**  and **Vue Test Utils**
 – **GitHub CI** for automated deployment to **GitHub Pages**
 
 ---
@@ -37,6 +38,8 @@ Further I want to add the following improvements to the project:
 - [X] create adaptive layout for mobile, tablet and desktop
 - [X] implement BEM methodology
 - [X] implement Vue.js framework
+- [X] implement unit-testing
+- [ ] improve unit-testing to ability to test vue-components
 - [ ] develop an Telegram bot for site administration
 - [ ] implement image adaptation for screens with different DPI
 - [ ] implement rendering optimisation
