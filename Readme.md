@@ -23,14 +23,13 @@ My goal in 1.0 version was to try to make my first **HTML layout**, but now when
 Successfully implemented **Vue.js** with **Vue-router**, **TypeScript** for a strict types and **SASS** for styling.
 
 Beside base technologies in 2.0 version I used:
-
-– **Firebase** to store projects data
-– **Cloudinary** to store images
-– some components from **Vuetify UI library**
-– script to prettify text
-– **FancyBox** as library for fullscreen images view
-– unit-testing with **Jest**  and **Vue Test Utils**
-– **GitHub CI** for automated deployment to **GitHub Pages**
+- **Firebase** to store projects data
+- **Cloudinary** to store images
+- some components from **Vuetify UI library**
+- script to prettify text
+- **FancyBox** as library for fullscreen images view
+- unit-testing with **Jest**  and **Vue Test Utils**
+- **GitHub CI** for automated deployment to **GitHub Pages**
 
 ---
 
