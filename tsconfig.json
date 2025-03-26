@@ -15,7 +15,9 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "jest"
+      "jest",
+      "@vue/test-utils",
+      "vite/client",
     ],
     "paths": {
       "@/*": [
@@ -34,7 +36,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "src/**/*.d.ts",
+    // "src/vue-shim.d.ts",
   ],
   "exclude": [
     "node_modules"
